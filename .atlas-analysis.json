@@ -1,0 +1,115 @@
+{
+  "projectType": "saas",
+  "projectName": "RespondeIA",
+  "projectDescription": "AI-powered WhatsApp customer service automation platform for businesses to handle inquiries, schedule appointments, and close sales automatically.",
+  "theme": "almond",
+  "primaryColor": "#7c7c7c",
+  "lightColor": "#070707",
+  "darkColor": "#c4c4c4",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "setup"
+            ]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/ai-chatbot",
+              "features/appointment-scheduling",
+              "features/crm-integration",
+              "features/analytics",
+              "features/handoff"
+            ]
+          },
+          {
+            "group": "User Guide",
+            "pages": [
+              "guides/authentication",
+              "guides/dashboard",
+              "guides/pricing-plans",
+              "guides/customization"
+            ]
+          },
+          {
+            "group": "Integration",
+            "pages": [
+              "integration/whatsapp",
+              "integration/mercadopago",
+              "integration/api-overview"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Authentication",
+            "pages": [
+              "api/auth/login",
+              "api/auth/register"
+            ]
+          },
+          {
+            "group": "Pricing",
+            "pages": [
+              "api/pricing/get-plans"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "UI Components",
+            "pages": [
+              "components/button",
+              "components/input",
+              "components/card",
+              "components/accordion"
+            ]
+          },
+          {
+            "group": "Module Components",
+            "pages": [
+              "components/auth-components",
+              "components/pricing-components",
+              "components/landing-components"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "AI conversational chatbot for WhatsApp",
+    "Automated appointment scheduling",
+    "Integrated CRM with contact history",
+    "Real-time analytics dashboard",
+    "Controlled handoff to human agents",
+    "Sub-2-second average response time",
+    "MercadoPago payment integration",
+    "Flexible pricing plans with annual billing"
+  ],
+  "publicApiSurface": [
+    "POST /api/login",
+    "POST /api/register",
+    "GET /api/pricing/plans",
+    "useLogin hook",
+    "useGetPricingPlans hook",
+    "usePricingPlans hook",
+    "authService.login",
+    "authService.register",
+    "useAuthStore (Zustand)",
+    "ROUTES configuration"
+  ]
+}
