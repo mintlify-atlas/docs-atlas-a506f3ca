@@ -1,0 +1,756 @@
+---
+title: "Setup and Configuration Guide"
+description: "Detailed guide to configuring and customizing your RespondeIA chatbot"
+---
+
+## Complete Setup Guide
+
+This guide covers advanced configuration options and best practices for getting the most out of RespondeIA. Use this after completing the [Quick Start Guide](/quickstart).
+
+<Info>
+This guide assumes you've already created an account and connected WhatsApp. If not, start with the [Quick Start Guide](/quickstart).
+</Info>
+
+## Dashboard Overview
+
+After logging in, you'll access your main dashboard where you can manage all aspects of your AI assistant.
+
+### Navigation Structure
+
+```tsx
+// Dashboard routes from source code
+export const ROUTES = {
+  DASHBOARD: {
+    ROOT: "/dashboard",
+    QUERIES: "/consultas",
+    SUPPORT: "/soporte",
+  },
+};
+```
+
+<CardGroup cols={3}>
+  <Card title="Dashboard" icon="house">
+    Main overview with key metrics
+  </Card>
+  <Card title="Consultas" icon="messages">
+    View and manage conversations
+  </Card>
+  <Card title="Soporte" icon="headset">
+    Access support and help resources
+  </Card>
+</CardGroup>
+
+## Authentication Setup
+
+### Email and Password Authentication
+
+RespondeIA uses secure authentication with the following flow:
+
+```tsx
+// Login implementation from auth service
+const handleLogin = async (email: string, password: string) => {
+  try {
+    const response = await authService.login({ email, password });
+    // Store auth token and user data
+    useAuthStore.setState({ 
+      user: response.user, 
+      token: response.token 
+    });
+  } catch (error) {
+    console.error("Login failed:", error);
+  }
+};
+```
+
+<Steps>
+  <Step title="Secure Password Requirements">
+    - Minimum 8 characters
+    - Mix of letters and numbers recommended
+    - Special characters for added security
+  </Step>
+  
+  <Step title="Session Management">
+    Toggle **Recordar sesión** to stay logged in. Sessions are secure and encrypted.
+  </Step>
+  
+  <Step title="Password Reset">
+    If you forget your password, use the reset link on the login page. You'll receive an email with instructions.
+  </Step>
+</Steps>
+
+### Google OAuth Integration
+
+For users who prefer OAuth authentication:
+
+```tsx
+// Google authentication button
+<Button variant="outline" className="w-full py-6" type="button">
+  <GoogleIcon className="mr-2 h-5 w-5" />
+  Continuar con Google
+</Button>
+```
+
+<Tip>
+Google authentication is faster and more secure. You won't need to manage another password.
+</Tip>
+
+## WhatsApp Integration
+
+### Meta Business API Setup
+
+RespondeIA uses the official WhatsApp Business API from Meta for reliable, scalable messaging.
+
+<Warning>
+**Important**: Personal WhatsApp accounts cannot be used. You must migrate to or create a WhatsApp Business account.
+</Warning>
+
+### Migration Process
+
+If you're migrating an existing number:
+
+<Steps>
+  <Step title="Backup Your Data">
+    Before migration, back up important WhatsApp conversations using WhatsApp's built-in backup feature.
+  </Step>
+  
+  <Step title="Initiate Meta Verification">
+    RespondeIA will guide you through Meta's verification process:
+    - Business information verification
+    - Phone number verification
+    - Facebook Business Manager connection
+  </Step>
+  
+  <Step title="Complete Migration">
+    The process typically takes 10 minutes but can take up to 24 hours for Meta to approve.
+  </Step>
+  
+  <Step title="Verify Connection">
+    Send a test message to confirm your number is connected and the bot responds.
+  </Step>
+</Steps>
+
+### Number Configuration
+
+<CodeGroup>
+```json Business Profile
+{
+  "displayName": "Tu Empresa",
+  "about": "Atención al cliente automatizada 24/7",
+  "profilePicture": "https://yoursite.com/logo.png",
+  "category": "Professional Services",
+  "address": "Buenos Aires, Argentina",
+  "email": "contacto@tuempresa.com",
+  "website": "https://tuempresa.com"
+}
+```
+
+```json Messaging Settings
+{
+  "autoReplyEnabled": true,
+  "greetingMessage": "¡Hola! 👋 ¿En qué puedo ayudarte?",
+  "awayMessage": "Estamos procesando tu consulta...",
+  "businessHours": {
+    "monday": "09:00-18:00",
+    "tuesday": "09:00-18:00",
+    "wednesday": "09:00-18:00",
+    "thursday": "09:00-18:00",
+    "friday": "09:00-18:00",
+    "saturday": "Closed",
+    "sunday": "Closed"
+  }
+}
+```
+</CodeGroup>
+
+## AI Training and Customization
+
+### Training Your AI Assistant
+
+The quality of your AI responses depends on the training data you provide.
+
+#### Business Context
+
+Provide comprehensive information about your business:
+
+<Steps>
+  <Step title="Company Overview">
+    Describe what your business does, who you serve, and your unique value proposition.
+  </Step>
+  
+  <Step title="Products and Services">
+    List all products/services with descriptions, pricing, and availability.
+  </Step>
+  
+  <Step title="Policies">
+    Include return policies, shipping information, payment terms, etc.
+  </Step>
+  
+  <Step title="Common Questions">
+    Add FAQs with detailed answers. The AI learns from these examples.
+  </Step>
+</Steps>
+
+#### Conversation Tone
+
+Customize how your AI communicates:
+
+<CardGroup cols={2}>
+  <Card title="Formal" icon="user-tie">
+    Professional tone for B2B or professional services
+  </Card>
+  <Card title="Casual" icon="comment-smile">
+    Friendly and approachable for consumer brands
+  </Card>
+  <Card title="Empathetic" icon="heart">
+    Caring tone for healthcare or support services
+  </Card>
+  <Card title="Enthusiastic" icon="star">
+    Energetic tone for lifestyle or entertainment brands
+  </Card>
+</CardGroup>
+
+### AI Response Examples
+
+From the source code, here's how the AI handles conversations:
+
+```tsx
+// Example conversation from BotConvertion component
+const conversationExample = [
+  {
+    from: "bot",
+    text: "¡Hola! 👋 ¿En qué puedo ayudarte?",
+    time: "10:45"
+  },
+  {
+    from: "user",
+    text: "Quiero agendar un turno para mañana.",
+    time: "10:46"
+  },
+  {
+    from: "bot",
+    slots: ["🕒 15:00 hs", "🕔 17:00 hs"],
+    prefix: "¡Perfecto! 🗓️ Tengo disponible:",
+    suffix: "¿Cuál te queda mejor?",
+    time: "10:46"
+  },
+  {
+    from: "user",
+    text: "Las 15:00 me viene perfecto 👍",
+    time: "10:47"
+  },
+  {
+    from: "bot",
+    text: "✅ ¡Listo! Turno confirmado para mañana a las 15:00 hs.",
+    time: "10:47"
+  }
+];
+```
+
+<Note>
+**Response Time**: The platform maintains an average response latency of under 2 seconds (1.4s average across all businesses).
+</Note>
+
+## Appointment Scheduling Configuration
+
+Set up automatic appointment booking for your business.
+
+### Calendar Integration
+
+<Steps>
+  <Step title="Define Service Types">
+    Create different appointment types (consultation, installation, delivery, etc.).
+  </Step>
+  
+  <Step title="Set Availability">
+    Configure your available time slots for each day of the week.
+  </Step>
+  
+  <Step title="Duration Settings">
+    Set default duration for each appointment type (15min, 30min, 1hr, etc.).
+  </Step>
+  
+  <Step title="Buffer Times">
+    Add buffer time between appointments for preparation or travel.
+  </Step>
+  
+  <Step title="Confirmation Settings">
+    Configure automatic confirmation messages and reminders.
+  </Step>
+</Steps>
+
+### Booking Rules
+
+```json
+{
+  "minimumNotice": "2 hours",
+  "maximumAdvance": "30 days",
+  "allowRescheduling": true,
+  "allowCancellation": true,
+  "cancellationDeadline": "24 hours",
+  "confirmationMessage": "Tu turno está confirmado para {date} a las {time}",
+  "reminderTiming": "24 hours before"
+}
+```
+
+<Tip>
+Enable automatic reminders to reduce no-shows. The system sends reminders 24 hours before scheduled appointments.
+</Tip>
+
+## CRM Integration
+
+RespondeIA includes a built-in CRM to manage customer relationships.
+
+### Contact Management
+
+The CRM automatically:
+- Creates contact records from WhatsApp conversations
+- Stores complete conversation history
+- Tracks customer interactions and preferences
+- Segments customers for targeted messaging
+
+### Contact Data Structure
+
+```typescript
+interface Contact {
+  id: string;
+  whatsappNumber: string;
+  name?: string;
+  email?: string;
+  firstContact: Date;
+  lastInteraction: Date;
+  conversationCount: number;
+  appointmentHistory: Appointment[];
+  customFields: Record<string, any>;
+  tags: string[];
+  notes: string;
+}
+```
+
+<Info>
+All customer data is encrypted and stored securely in compliance with data protection regulations.
+</Info>
+
+### Customer Segmentation
+
+Create segments based on:
+- Conversation frequency
+- Purchase history
+- Appointment patterns
+- Custom tags
+- Geographic location
+
+## Analytics Dashboard
+
+Monitor performance with real-time analytics.
+
+### Key Metrics
+
+<CardGroup cols={2}>
+  <Card title="Resolution Rate" icon="check-circle">
+    Percentage of queries resolved by AI without human intervention
+  </Card>
+  <Card title="Response Time" icon="clock">
+    Average time from customer message to bot response (target: under 2s)
+  </Card>
+  <Card title="Customer Satisfaction" icon="star">
+    Satisfaction ratings collected after conversations
+  </Card>
+  <Card title="Conversation Volume" icon="chart-line">
+    Total messages handled per day/week/month
+  </Card>
+  <Card title="Handoff Rate" icon="hand">
+    Percentage of conversations transferred to human agents
+  </Card>
+  <Card title="Active Users" icon="users">
+    Unique customers who messaged your bot
+  </Card>
+</CardGroup>
+
+### Performance Benchmarks
+
+```tsx
+// Platform-wide statistics from Hero component
+const platformStats = {
+  activeBusinesses: "2,400+",
+  satisfactionRate: "98%",
+  setupTime: "8 min",
+  averageResponse: "1.4s"
+};
+```
+
+Compare your metrics against these platform-wide averages:
+- **Satisfaction Rate**: Aim for >95%
+- **Response Time**: Keep under 2 seconds
+- **Resolution Rate**: Target 80-90% for well-trained bots
+
+## Human Handoff Configuration
+
+Configure when and how conversations transfer to human agents.
+
+### Handoff Triggers
+
+<Steps>
+  <Step title="Keyword Triggers">
+    Set keywords that automatically trigger handoff (e.g., "hablar con humano", "urgente").
+  </Step>
+  
+  <Step title="Confidence Threshold">
+    If AI confidence drops below a threshold, offer handoff to human agent.
+  </Step>
+  
+  <Step title="Complex Queries">
+    Automatically detect complex queries that require human expertise.
+  </Step>
+  
+  <Step title="Manual Request">
+    Always allow customers to request human assistance at any time.
+  </Step>
+</Steps>
+
+### Handoff Process
+
+```typescript
+interface HandoffContext {
+  conversationId: string;
+  customer: Contact;
+  conversationHistory: Message[];
+  reason: 'customer_request' | 'low_confidence' | 'keyword_trigger';
+  priority: 'low' | 'medium' | 'high';
+  assignedAgent?: string;
+}
+```
+
+When a handoff occurs:
+1. Customer is notified that an agent will assist
+2. Full conversation context is passed to the agent
+3. Agent sees customer history and previous messages
+4. Customer receives confirmation when agent takes over
+
+<Warning>
+Ensure you have team members available to handle handoffs during business hours. Configure out-of-hours behavior in settings.
+</Warning>
+
+## MercadoPago Payment Integration
+
+Accept payments directly in WhatsApp conversations.
+
+<Info>
+**New Feature**: MercadoPago integration is now available! Process payments without leaving WhatsApp.
+</Info>
+
+### Setting Up MercadoPago
+
+<Steps>
+  <Step title="Connect Account">
+    Link your MercadoPago business account in **Settings** > **Payments**.
+  </Step>
+  
+  <Step title="Configure Products">
+    Add products/services with prices in your catalog.
+  </Step>
+  
+  <Step title="Enable Payment Links">
+    The bot will automatically generate payment links when customers want to purchase.
+  </Step>
+  
+  <Step title="Test Transactions">
+    Use MercadoPago's sandbox mode to test the payment flow before going live.
+  </Step>
+</Steps>
+
+### Payment Flow
+
+```typescript
+const paymentFlow = [
+  "Customer requests product/service",
+  "Bot confirms availability and price",
+  "Bot generates MercadoPago payment link",
+  "Customer completes payment via link",
+  "Bot confirms payment received",
+  "Transaction recorded in CRM"
+];
+```
+
+<Tip>
+Payment confirmations are automatic. The bot will notify customers as soon as payment is processed.
+</Tip>
+
+## Pricing Plans and Billing
+
+Understand the different plans and how to manage your subscription.
+
+### Available Plans
+
+From the source code pricing structure:
+
+```typescript
+// Plans from get-plans.ts
+const plans: Plan[] = [
+  {
+    id: "basico",
+    name: "Básico",
+    description: "Para negocios que recién comienzan",
+    priceMonth: 29,
+    priceYear: 23,
+    features: [
+      "1 número WhatsApp",
+      "Hasta 500 mensajes",
+      "Respuestas automáticas IA"
+    ],
+    buttonText: "Comenzar prueba",
+    highlight: false,
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    description: "Para pymes en crecimiento",
+    priceMonth: 59,
+    priceYear: 47,
+    features: [
+      "1 número WhatsApp",
+      "Mensajes ilimitados",
+      "IA personalizada avanzada",
+      "CRM de contactos"
+    ],
+    buttonText: "Comenzar prueba",
+    highlight: true,
+  },
+  {
+    id: "agencia",
+    name: "Agencia",
+    description: "Para agencias y revendedores",
+    priceMonth: 149,
+    priceYear: 119,
+    features: [
+      "Hasta 5 números",
+      "Mensajes ilimitados",
+      "Panel multi-cliente",
+      "White-label"
+    ],
+    buttonText: "Contactar ventas",
+    highlight: false,
+  }
+];
+```
+
+### Billing Management
+
+<Steps>
+  <Step title="View Current Plan">
+    Check your current plan and usage in **Settings** > **Billing**.
+  </Step>
+  
+  <Step title="Upgrade or Downgrade">
+    Change plans at any time. Changes take effect at the next billing cycle.
+  </Step>
+  
+  <Step title="Annual Billing">
+    Save 20% by switching to annual billing (e.g., Pro: $47/month vs $59/month).
+  </Step>
+  
+  <Step title="Cancel Subscription">
+    Cancel anytime from the billing page. No penalties or additional charges.
+  </Step>
+</Steps>
+
+<CardGroup cols={3}>
+  <Card title="7-Day Free Trial" icon="gift">
+    Full access to all features
+  </Card>
+  <Card title="No Credit Card" icon="shield-check">
+    Start trial without payment
+  </Card>
+  <Card title="Cancel Anytime" icon="door-open">
+    No commitment required
+  </Card>
+</CardGroup>
+
+## Advanced Configuration
+
+### Custom Workflows
+
+Create custom conversation flows for specific scenarios:
+
+<CodeGroup>
+```typescript Lead Qualification
+const leadQualificationFlow = {
+  trigger: "new_conversation",
+  steps: [
+    { action: "greet", message: "¡Hola! 👋" },
+    { action: "ask", question: "¿Qué servicio te interesa?" },
+    { action: "collect", field: "service_interest" },
+    { action: "ask", question: "¿Cuál es tu presupuesto?" },
+    { action: "collect", field: "budget" },
+    { action: "qualify", criteria: { budget: ">1000" } },
+    { action: "handoff_or_continue" }
+  ]
+};
+```
+
+```typescript Order Status
+const orderStatusFlow = {
+  trigger: "keyword: pedido, orden, estado",
+  steps: [
+    { action: "ask", question: "¿Cuál es tu número de pedido?" },
+    { action: "validate", type: "order_number" },
+    { action: "lookup", database: "orders" },
+    { action: "respond", template: "order_status" }
+  ]
+};
+```
+</CodeGroup>
+
+### Webhook Integration
+
+Integrate RespondeIA with external systems:
+
+```typescript
+interface WebhookConfig {
+  url: string;
+  events: ('message_received' | 'appointment_booked' | 'payment_completed')[];
+  headers: Record<string, string>;
+  retryPolicy: {
+    maxRetries: number;
+    backoff: 'exponential' | 'linear';
+  };
+}
+```
+
+<Tip>
+Use webhooks to sync RespondeIA data with your CRM, e-commerce platform, or custom applications.
+</Tip>
+
+## Security and Compliance
+
+### Data Protection
+
+<CardGroup cols={2}>
+  <Card title="Encryption" icon="lock">
+    All data encrypted in transit and at rest
+  </Card>
+  <Card title="GDPR Compliant" icon="shield-check">
+    Full compliance with EU data protection
+  </Card>
+  <Card title="Access Controls" icon="key">
+    Role-based access for team members
+  </Card>
+  <Card title="Audit Logs" icon="file-lines">
+    Complete audit trail of all actions
+  </Card>
+</CardGroup>
+
+### Privacy Settings
+
+```json
+{
+  "dataRetention": "90 days",
+  "anonymizeAfter": "1 year",
+  "exportFormat": "JSON",
+  "deletionPolicy": "complete_removal",
+  "consentTracking": true
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Bot not responding to messages">
+    **Checklist**:
+    - Verify bot is active (check dashboard toggle)
+    - Confirm WhatsApp number is connected
+    - Check message quota hasn't been exceeded
+    - Review webhook connectivity in settings
+  </Accordion>
+  
+  <Accordion title="Slow response times">
+    **Solutions**:
+    - Check your internet connection
+    - Verify platform status page for incidents
+    - Review AI model complexity (simpler = faster)
+    - Contact support if issue persists
+  </Accordion>
+  
+  <Accordion title="Incorrect AI responses">
+    **How to fix**:
+    - Add more training examples for that topic
+    - Review and update FAQ responses
+    - Adjust AI confidence threshold
+    - Enable handoff for complex topics
+  </Accordion>
+  
+  <Accordion title="Payment integration not working">
+    **Debug steps**:
+    - Verify MercadoPago account is connected
+    - Check API credentials are valid
+    - Test in sandbox mode first
+    - Review transaction logs for errors
+  </Accordion>
+</AccordionGroup>
+
+### Getting Support
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="/">
+    Search our comprehensive docs
+  </Card>
+  <Card title="Email Support" icon="envelope">
+    soporte@respondeia.com
+  </Card>
+  <Card title="Dashboard Support" icon="headset">
+    Access support from your dashboard
+  </Card>
+  <Card title="Community Forum" icon="users">
+    Connect with other users
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+### Optimize AI Performance
+
+<Steps>
+  <Step title="Regular Training Updates">
+    Update your AI training monthly with new FAQs and customer queries.
+  </Step>
+  
+  <Step title="Monitor Analytics">
+    Review performance metrics weekly to identify improvement areas.
+  </Step>
+  
+  <Step title="A/B Test Responses">
+    Test different response styles to see what customers prefer.
+  </Step>
+  
+  <Step title="Gather Feedback">
+    Actively collect customer feedback to improve responses.
+  </Step>
+</Steps>
+
+### Maximize Customer Satisfaction
+
+<Tip>
+**Quick wins**:
+- Respond to handoff requests within 5 minutes
+- Keep AI responses concise (under 100 words)
+- Use emojis sparingly but effectively
+- Always provide next steps or call-to-action
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AI Chatbot Deep Dive" href="/features/ai-chatbot" icon="robot">
+    Learn advanced AI training techniques
+  </Card>
+  <Card title="Analytics Guide" href="/features/analytics" icon="chart-bar">
+    Master your analytics dashboard
+  </Card>
+  <Card title="API Integration" href="/integration/api-overview" icon="code">
+    Connect RespondeIA to your systems
+  </Card>
+  <Card title="CRM Features" href="/features/crm-integration" icon="database">
+    Leverage customer data effectively
+  </Card>
+</CardGroup>

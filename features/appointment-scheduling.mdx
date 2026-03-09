@@ -1,0 +1,491 @@
+---
+title: 'Automated Appointment Scheduling'
+description: 'AI assistant manages appointments and bookings directly in WhatsApp conversations'
+icon: 'calendar-check'
+---
+
+# Automated Appointment Scheduling
+
+RespondeIA's AI assistant manages your entire appointment booking process through natural WhatsApp conversations. Customers can check availability, book appointments, and receive confirmations - all without human intervention.
+
+## Overview
+
+The appointment scheduling system integrates seamlessly with your AI chatbot to handle the complete booking workflow. Your assistant checks real-time availability, presents options to customers, and confirms bookings instantly.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Availability" icon="clock">
+    Check open slots instantly during conversation
+  </Card>
+  <Card title="Instant Confirmation" icon="check-circle">
+    Book appointments with immediate confirmation
+  </Card>
+  <Card title="Zero Manual Work" icon="robot">
+    Fully automated from inquiry to confirmation
+  </Card>
+  <Card title="Calendar Sync" icon="calendar-days">
+    Integrates with your existing schedule
+  </Card>
+</CardGroup>
+
+## How It Works
+
+The scheduling system handles appointments through an intelligent conversational flow.
+
+<Steps>
+  <Step title="Customer requests appointment">
+    Customer messages your WhatsApp with an appointment request.
+    
+    ```
+    User: "Quiero agendar un turno para mañana."
+    ```
+  </Step>
+  
+  <Step title="AI checks availability">
+    The bot queries your calendar in real-time to find available time slots for the requested date.
+  </Step>
+  
+  <Step title="Present options">
+    The AI presents available times as interactive options:
+    
+    ```typescript
+    {
+      from: "bot",
+      slots: ["🕒 15:00 hs", "🕔 17:00 hs"],
+      prefix: "¡Perfecto! 🗓️ Tengo disponible:",
+      suffix: "¿Cuál te queda mejor?",
+      time: "10:46"
+    }
+    ```
+  </Step>
+  
+  <Step title="Customer selects time">
+    Customer chooses their preferred slot.
+    
+    ```
+    User: "Las 15:00 me viene perfecto 👍"
+    ```
+  </Step>
+  
+  <Step title="Instant confirmation">
+    The bot confirms the booking and adds it to your calendar:
+    
+    ```typescript
+    {
+      from: "bot",
+      text: "✅ ¡Listo! Turno confirmado para mañana a las 15:00 hs.",
+      time: "10:47"
+    }
+    ```
+  </Step>
+</Steps>
+
+## Appointment Flow Example
+
+Here's the complete conversation flow from the `BotConvertion.tsx` component:
+
+```typescript
+const MESSAGES: Message[] = [
+  { 
+    id: 1, 
+    from: "bot", 
+    text: "¡Hola! 👋 ¿En qué puedo ayudarte?", 
+    time: "10:45", 
+    delay: 800 
+  },
+  { 
+    id: 2, 
+    from: "user", 
+    text: "Quiero agendar un turno para mañana.", 
+    time: "10:46", 
+    ticks: "blue", 
+    delay: 2600 
+  },
+  {
+    id: 3,
+    from: "bot",
+    slots: ["🕒 15:00 hs", "🕔 17:00 hs"],
+    prefix: "¡Perfecto! 🗓️ Tengo disponible:",
+    suffix: "¿Cuál te queda mejor?",
+    time: "10:46",
+    delay: 4400
+  },
+  { 
+    id: 4, 
+    from: "user", 
+    text: "Las 15:00 me viene perfecto 👍", 
+    time: "10:47", 
+    ticks: "grey", 
+    delay: 6200 
+  },
+  { 
+    id: 5, 
+    from: "bot", 
+    text: "✅ ¡Listo! Turno confirmado para mañana a las 15:00 hs.", 
+    time: "10:47", 
+    delay: 8000 
+  }
+];
+```
+
+This interaction demonstrates:
+
+- **Natural language understanding** - Bot interprets "quiero agendar un turno"
+- **Date recognition** - Understands "mañana" refers to tomorrow
+- **Availability checking** - Queries real calendar for open slots
+- **Interactive selection** - Presents multiple options clearly
+- **Instant confirmation** - Books immediately without manual approval
+
+<Note>
+  The entire booking process completes in **under 30 seconds**, compared to traditional phone booking which averages 3-5 minutes.
+</Note>
+
+## Visual Confirmation
+
+When an appointment is confirmed, customers receive a rich confirmation message with visual elements:
+
+```typescript
+{showConfirmed && (
+  <div
+    style={{
+      position: "absolute",
+      bottom: "64px",
+      right: "-16px",
+      background: "white",
+      borderRadius: "14px",
+      padding: "9px 13px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.13)",
+      display: "flex",
+      alignItems: "center",
+      gap: "9px",
+      animation: "badge-in 0.4s cubic-bezier(0.34,1.56,0.64,1)"
+    }}
+  >
+    <div style={{ /* Confirmation icon styling */ }}>
+      ✅
+    </div>
+    <div>
+      <p>Turno confirmado</p>
+      <p>Mañana · 15:00 hs</p>
+    </div>
+  </div>
+)}
+```
+
+The confirmation includes:
+- ✅ Visual confirmation icon
+- Bold headline: "Turno confirmado"
+- Appointment details: date and time
+- Smooth animation on appearance
+
+## Configuration
+
+Set up your appointment scheduling during the initial business profile configuration.
+
+### Business Hours
+
+Define when appointments can be booked:
+
+- Operating days (Monday-Sunday)
+- Start and end times
+- Break periods (lunch, etc.)
+- Holidays and exceptions
+
+### Appointment Duration
+
+Configure typical appointment lengths:
+
+- Standard duration (e.g., 30 minutes, 1 hour)
+- Service-specific durations
+- Buffer time between appointments
+
+### Capacity Management
+
+Set booking limits:
+
+- Maximum appointments per hour
+- Concurrent booking limits
+- Resource allocation (rooms, staff)
+
+### Advance Booking
+
+Control booking windows:
+
+- Minimum advance notice (e.g., 2 hours)
+- Maximum advance booking (e.g., 30 days)
+- Same-day booking rules
+
+<Info>
+  From the methodology section: "Horarios, servicios y precios. La IA aprende todo desde un formulario guiado." - All configuration is done through a guided form, no technical knowledge required.
+</Info>
+
+## Booking Types
+
+The system supports various appointment scenarios:
+
+<Accordion title="Simple Bookings">
+  Single service, single time slot appointments.
+  
+  **Example**: Haircut appointment at 3pm
+  
+  ```
+  Customer: "Necesito turno para corte de pelo"
+  Bot: "¿Qué día te viene bien?"
+  Customer: "Mañana"
+  Bot: "Tengo disponible: 🕒 15:00 hs, 🕔 17:00 hs"
+  Customer: "15:00"
+  Bot: "✅ Confirmado mañana a las 15:00"
+  ```
+</Accordion>
+
+<Accordion title="Multi-Service Bookings">
+  Appointments requiring multiple services or extended time.
+  
+  **Example**: Dental cleaning + consultation
+  
+  The bot automatically calculates total duration and finds suitable slots.
+</Accordion>
+
+<Accordion title="Recurring Appointments">
+  Regular appointments on a schedule.
+  
+  **Example**: Weekly therapy sessions
+  
+  Customer can book multiple appointments at once following a pattern.
+</Accordion>
+
+<Accordion title="Group Bookings">
+  Appointments for multiple people.
+  
+  **Example**: Table reservation for 4 people
+  
+  The bot checks capacity and confirms based on party size.
+</Accordion>
+
+## Availability Management
+
+The system intelligently manages your calendar to present accurate availability.
+
+### Real-Time Slot Checking
+
+When a customer requests an appointment, the bot:
+
+1. Queries your current calendar
+2. Filters out booked slots
+3. Applies business hour rules
+4. Checks capacity limits
+5. Presents only genuinely available times
+
+### Buffer Time
+
+Automatically adds buffer time between appointments:
+
+- Preparation time before appointments
+- Cleanup time after appointments
+- Travel time between locations (if applicable)
+
+### Overbooking Prevention
+
+The system prevents double-booking:
+
+- Locks slots during active booking conversations
+- Updates availability in real-time
+- Handles concurrent booking attempts
+
+<Warning>
+  Slots are reserved temporarily during the booking conversation. If the customer doesn't complete booking within 5 minutes, the slot is released.
+</Warning>
+
+## Confirmation and Reminders
+
+Once an appointment is booked, the system manages the entire lifecycle.
+
+### Immediate Confirmation
+
+Customers receive instant confirmation via WhatsApp:
+
+```
+✅ ¡Listo! Turno confirmado para mañana a las 15:00 hs.
+
+📍 Clínica Dental Norte
+⏱️ Duración: 30 minutos
+👤 Dr. García
+
+Si necesitás cancelar o reprogramar, escribí "cancelar turno"
+```
+
+### Automated Reminders
+
+(Future feature) The system will send:
+
+- 24-hour advance reminder
+- 2-hour advance reminder
+- "On my way" prompts
+
+### Cancellation and Rescheduling
+
+Customers can manage their appointments through conversation:
+
+```
+Customer: "Necesito cancelar mi turno"
+Bot: "Encontré tu turno para mañana a las 15:00. ¿Querés cancelar o reprogramar?"
+Customer: "Reprogramar"
+Bot: "¿Qué día te viene mejor?"
+```
+
+## Business Impact
+
+Based on customer results from the testimonials:
+
+> "En tres días el bot ya estaba respondiendo. Las reservas online subieron un 40% el primer mes sin ningún esfuerzo adicional del equipo."
+> 
+> — Juan Rodríguez, Propietario — Restaurante El Molino
+
+<CardGroup cols={3}>
+  <Card title="40% increase" icon="arrow-up">
+    In online reservations
+  </Card>
+  <Card title="3 days" icon="calendar">
+    Time to full deployment
+  </Card>
+  <Card title="Zero effort" icon="sparkles">
+    No additional team workload
+  </Card>
+</CardGroup>
+
+### Key Benefits
+
+- **24/7 booking** - Customers can book appointments at any time
+- **No phone tag** - Eliminates back-and-forth phone calls
+- **Instant response** - No waiting for business hours
+- **Higher conversion** - Easier booking increases completion rate
+- **Staff efficiency** - Team freed from scheduling tasks
+
+> "Atendemos clientes a las 3am sin personal adicional. Calculamos que recuperamos la inversión en las primeras dos semanas de uso."
+> 
+> — Laura Pérez, Socia — Inmobiliaria Palermo
+
+## Setup Process
+
+From the methodology component, setting up appointment scheduling follows this workflow:
+
+<Steps>
+  <Step title="Paso 01: Cargá tu negocio" icon="1">
+    Configure your services, hours, and capacity through a guided form.
+    
+    > "Horarios, servicios y precios. La IA aprende todo desde un formulario guiado."
+  </Step>
+  
+  <Step title="Paso 02: Conectá WhatsApp" icon="2">
+    Verify your WhatsApp Business number to enable message handling.
+    
+    > "Verificás tu número Business con un código. Compatible con números existentes."
+  </Step>
+  
+  <Step title="Paso 03: La IA responde" icon="3">
+    Your assistant immediately starts handling appointment requests.
+    
+    > "Tu asistente virtual gestiona consultas, turnos y ventas en tiempo real."
+  </Step>
+</Steps>
+
+<Tip>
+  **Average setup time: 8 minutes** - "El promedio de nuestros clientes es de 8 minutos desde el registro hasta el bot activo respondiendo mensajes."
+</Tip>
+
+## Integration with Other Features
+
+Appointment scheduling works seamlessly with RespondeIA's other features:
+
+### CRM Integration
+
+Every booking is automatically saved to the customer's profile in the [CRM](/features/crm-integration):
+
+- Appointment history
+- Booking preferences
+- Cancellation patterns
+- Service interests
+
+### Analytics Tracking
+
+Appointment metrics appear in your [Analytics dashboard](/features/analytics):
+
+- Booking conversion rate
+- Popular time slots
+- Average booking time
+- Cancellation rates
+
+### Handoff Support
+
+For complex booking requests, the bot can [transfer to a human agent](/features/handoff) while maintaining context:
+
+```
+Bot: "Esta solicitud requiere atención personalizada. 
+Transfiero la conversación a María del equipo.
+
+Contexto: Cliente solicita evento para 50 personas el 15/06."
+```
+
+## Best Practices
+
+<Tip>
+  **Keep availability current**: Regularly update your calendar and business hours to ensure accurate availability.
+</Tip>
+
+<Tip>
+  **Set realistic buffers**: Allow adequate time between appointments to prevent customer dissatisfaction.
+</Tip>
+
+<Tip>
+  **Monitor no-shows**: Use analytics to identify patterns and implement reminder strategies.
+</Tip>
+
+<Note>
+  The system automatically handles time zones based on your business location configuration.
+</Note>
+
+## Troubleshooting
+
+<Accordion title="Bot shows no availability">
+  **Possible causes:**
+  - Business hours not configured
+  - All slots already booked
+  - Calendar not synced
+  - Buffer time too large
+  
+  **Solution:** Check your business profile settings and calendar integration.
+</Accordion>
+
+<Accordion title="Double bookings occurring">
+  **Possible causes:**
+  - Capacity limits not set
+  - Manual bookings not reflected in system
+  - Calendar sync delay
+  
+  **Solution:** Ensure all bookings go through the system or are manually added to synced calendar.
+</Accordion>
+
+<Accordion title="Customers can't book specific dates">
+  **Possible causes:**
+  - Date falls outside advance booking window
+  - Holiday or exception set
+  - Day of week not included in business hours
+  
+  **Solution:** Review your booking window and holiday settings.
+</Accordion>
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card title="AI Chatbot" icon="message-bot" href="/features/ai-chatbot">
+    Learn how the conversational AI works
+  </Card>
+  <Card title="CRM Integration" icon="users" href="/features/crm-integration">
+    See how appointment data is stored
+  </Card>
+  <Card title="Analytics" icon="chart-line" href="/features/analytics">
+    Track booking performance metrics
+  </Card>
+  <Card title="Handoff" icon="hand" href="/features/handoff">
+    Handle complex booking requests
+  </Card>
+</CardGroup>

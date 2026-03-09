@@ -1,0 +1,723 @@
+---
+title: 'Real-Time Analytics Dashboard'
+description: 'Resolution rate and customer satisfaction metrics in a single panel'
+icon: 'chart-line'
+---
+
+# Real-Time Analytics Dashboard
+
+RespondeIA provides comprehensive real-time analytics to track your customer service performance. Monitor conversation metrics, resolution rates, and customer satisfaction from a single, intuitive dashboard.
+
+## Overview
+
+The analytics system tracks every interaction and provides actionable insights to help you optimize your customer service operations.
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Data" icon="gauge-high">
+    Live metrics updated as conversations happen
+  </Card>
+  <Card title="Resolution Tracking" icon="circle-check">
+    Monitor how many issues are resolved by AI
+  </Card>
+  <Card title="Satisfaction Metrics" icon="star">
+    Track customer satisfaction scores
+  </Card>
+  <Card title="Performance Insights" icon="lightbulb">
+    AI-powered recommendations for improvement
+  </Card>
+</CardGroup>
+
+<Note>
+  From the Features component: **"Tasa de resolución y satisfacción en un solo panel."** - Resolution rate and satisfaction in a single panel.
+</Note>
+
+## Key Metrics
+
+The dashboard displays the most important metrics for customer service performance.
+
+### Resolution Rate
+
+Percentage of customer inquiries resolved without human intervention.
+
+```typescript
+interface ResolutionMetrics {
+  totalConversations: number;
+  resolvedByBot: number;
+  transferredToAgent: number;
+  abandoned: number;
+  resolutionRate: number; // percentage
+}
+
+// Example calculation
+const resolutionRate = (resolvedByBot / totalConversations) * 100;
+// e.g., 180 / 200 = 90% resolution rate
+```
+
+<CardGroup cols={3}>
+  <Card title="Resolved by Bot" icon="robot">
+    Issues handled end-to-end by AI
+  </Card>
+  <Card title="Transferred" icon="hand">
+    Required human agent assistance
+  </Card>
+  <Card title="Abandoned" icon="xmark">
+    Customer left before resolution
+  </Card>
+</CardGroup>
+
+### Customer Satisfaction
+
+Measure how satisfied customers are with their experience.
+
+```typescript
+interface SatisfactionMetrics {
+  averageRating: number; // 1-5 scale
+  totalRatings: number;
+  distribution: {
+    5: number; // excellent
+    4: number; // good
+    3: number; // okay
+    2: number; // poor
+    1: number; // very poor
+  };
+  nps: number; // Net Promoter Score
+}
+
+// Example
+const satisfaction = {
+  averageRating: 4.7,
+  totalRatings: 156,
+  distribution: { 5: 120, 4: 28, 3: 5, 2: 2, 1: 1 },
+  nps: 85
+};
+```
+
+<Info>
+  Customer satisfaction is measured through post-conversation surveys automatically sent via WhatsApp.
+</Info>
+
+### Response Time
+
+How quickly customers receive responses.
+
+```typescript
+interface ResponseTimeMetrics {
+  averageFirstResponse: number; // seconds
+  averageSubsequentResponse: number; // seconds
+  percentUnder2Seconds: number;
+  percentUnder5Seconds: number;
+  percentOver10Seconds: number;
+}
+```
+
+<CardGroup cols={3}>
+  <Card title="< 2 seconds" icon="bolt">
+    Average bot response time
+  </Card>
+  <Card title="Instant" icon="circle-check">
+    No customer waiting
+  </Card>
+  <Card title="24/7" icon="clock">
+    Always available
+  </Card>
+</CardGroup>
+
+From the Features component:
+> "Menos de dos segundos de latencia promedio, disponible 24/7."
+
+### Conversation Volume
+
+Track total conversations and trends over time.
+
+```typescript
+interface VolumeMetrics {
+  total: number;
+  byHour: Record<string, number>;
+  byDay: Record<string, number>;
+  byWeek: Record<string, number>;
+  growth: number; // percentage change
+  peakHours: string[];
+  peakDays: string[];
+}
+```
+
+## Dashboard Layout
+
+The analytics dashboard provides an at-a-glance view of your performance.
+
+<Steps>
+  <Step title="Summary Cards" icon="square-poll-vertical">
+    Top-level metrics displayed prominently:
+    
+    - Total conversations (today/week/month)
+    - Resolution rate percentage
+    - Average satisfaction score
+    - Response time average
+  </Step>
+  
+  <Step title="Trend Charts" icon="chart-line">
+    Visual representations of metrics over time:
+    
+    - Conversation volume by hour/day
+    - Resolution rate trends
+    - Satisfaction score trends
+    - Response time distributions
+  </Step>
+  
+  <Step title="Performance Breakdown" icon="chart-pie">
+    Detailed category analysis:
+    
+    - Conversations by intent (booking, inquiry, support)
+    - Resolution by category
+    - Satisfaction by issue type
+    - Peak activity periods
+  </Step>
+  
+  <Step title="Insights & Recommendations" icon="lightbulb">
+    AI-generated insights and suggestions:
+    
+    - Areas for improvement
+    - Trending topics
+    - Anomaly detection
+    - Optimization recommendations
+  </Step>
+</Steps>
+
+<Note>
+  From the Methodology component: "Dashboard con métricas de conversaciones, resoluciones y satisfacción." - Dashboard with conversation, resolution, and satisfaction metrics.
+</Note>
+
+## Detailed Analytics Views
+
+Drill down into specific areas for deeper analysis.
+
+### Conversation Analytics
+
+Analyze individual conversations and patterns.
+
+<Accordion title="Conversation List">
+  View all conversations with key details:
+  
+  ```typescript
+  interface ConversationSummary {
+    id: string;
+    customer: string;
+    startTime: Date;
+    duration: number;
+    messageCount: number;
+    resolution: "resolved" | "transferred" | "abandoned";
+    satisfaction?: number;
+    intent: string;
+    handledBy: "bot" | "agent";
+  }
+  ```
+  
+  Filter by:
+  - Date range
+  - Resolution status
+  - Satisfaction rating
+  - Intent category
+  - Duration
+</Accordion>
+
+<Accordion title="Message Analysis">
+  Understand conversation content:
+  
+  - Most common questions
+  - Frequently mentioned topics
+  - Customer pain points
+  - Popular services/products
+  - Competitor mentions
+  
+  Based on natural language processing of all messages.
+</Accordion>
+
+<Accordion title="Intent Distribution">
+  Break down conversations by customer intent:
+  
+  ```typescript
+  interface IntentMetrics {
+    intent: string;
+    count: number;
+    percentage: number;
+    avgResolutionTime: number;
+    resolutionRate: number;
+    avgSatisfaction: number;
+  }
+  
+  // Example intents
+  const intents = [
+    { intent: "appointment_booking", count: 120, percentage: 40 },
+    { intent: "service_inquiry", count: 90, percentage: 30 },
+    { intent: "pricing_question", count: 60, percentage: 20 },
+    { intent: "support_issue", count: 30, percentage: 10 }
+  ];
+  ```
+</Accordion>
+
+<Accordion title="Sentiment Analysis">
+  Track customer sentiment throughout conversations:
+  
+  - Overall sentiment distribution
+  - Sentiment changes during conversation
+  - Correlation with resolution
+  - Negative sentiment alerts
+</Accordion>
+
+### Performance Analytics
+
+Measure bot and agent performance.
+
+<Accordion title="Bot Performance">
+  How effectively the AI handles conversations:
+  
+  ```typescript
+  interface BotPerformance {
+    resolutionRate: number;
+    averageConfidence: number;
+    fallbackRate: number; // when bot needs help
+    successfulBookings: number;
+    accuracyRate: number;
+    learningProgress: number;
+  }
+  ```
+  
+  Key indicators:
+  - **Resolution rate**: % of conversations resolved without handoff
+  - **Confidence score**: AI's confidence in its responses
+  - **Fallback rate**: How often bot can't answer
+  - **Booking success**: % of booking attempts completed
+</Accordion>
+
+<Accordion title="Agent Performance">
+  When conversations are transferred to humans:
+  
+  ```typescript
+  interface AgentPerformance {
+    agentName: string;
+    conversationsHandled: number;
+    averageHandlingTime: number;
+    resolutionRate: number;
+    satisfactionScore: number;
+    responseTime: number;
+  }
+  ```
+  
+  Track:
+  - Number of transfers received
+  - Time to resolution
+  - Customer satisfaction scores
+  - Response time to transferred conversations
+</Accordion>
+
+<Accordion title="Handoff Analysis">
+  Understand when and why conversations are transferred:
+  
+  - Total handoffs
+  - Handoff rate percentage
+  - Reasons for handoff
+  - Time of day patterns
+  - Resolution after handoff
+  
+  See [Handoff](/features/handoff) for details on the transfer process.
+</Accordion>
+
+### Customer Analytics
+
+Insights about your customer base from CRM data.
+
+<Accordion title="Customer Segments">
+  Analyze different customer groups:
+  
+  - New vs. returning customers
+  - High-value customers
+  - Frequent bookers
+  - At-risk customers (low engagement)
+  - Satisfied vs. dissatisfied
+</Accordion>
+
+<Accordion title="Customer Behavior">
+  Understand how customers interact:
+  
+  - Preferred contact times
+  - Average conversation length
+  - Booking patterns
+  - Channel preferences
+  - Response rates
+</Accordion>
+
+<Accordion title="Lifetime Value">
+  Track customer value over time:
+  
+  ```typescript
+  interface CustomerValue {
+    totalCustomers: number;
+    averageLifetimeValue: number;
+    retentionRate: number;
+    churnRate: number;
+    averageCustomerLifespan: number;
+  }
+  ```
+</Accordion>
+
+<Accordion title="Retention Metrics">
+  Monitor customer retention:
+  
+  - Repeat customer rate
+  - Time between interactions
+  - Churn prediction
+  - Reactivation opportunities
+</Accordion>
+
+See [CRM Integration](/features/crm-integration) for customer data details.
+
+## Business Impact Metrics
+
+Track the bottom-line impact of automation.
+
+### Cost Savings
+
+Measure operational efficiency gains:
+
+```typescript
+interface CostSavings {
+  conversationsAutomated: number;
+  timesSaved: number; // hours
+  costPerConversation: number;
+  totalSavings: number;
+  roiPercentage: number;
+}
+
+// Example calculation
+const savings = {
+  conversationsAutomated: 180, // per month
+  avgTimePerConversation: 5, // minutes
+  totalTimeSaved: 180 * 5 = 900, // minutes = 15 hours
+  hourlyRate: 15, // USD per hour
+  totalSavings: 15 * 15 = 225 // USD per month
+};
+```
+
+<CardGroup cols={3}>
+  <Card title="80% reduction" icon="arrow-down">
+    In repetitive messages
+  </Card>
+  <Card title="15 hours/month" icon="clock">
+    Staff time saved
+  </Card>
+  <Card title="First month ROI" icon="dollar-sign">
+    Return on investment
+  </Card>
+</CardGroup>
+
+From customer testimonials:
+> "Redujimos el 80% de los mensajes repetitivos. El equipo ahora se enfoca en tareas de mayor valor. El retorno fue evidente en el primer mes."
+> 
+> — María García, Directora — Clínica Dental Norte
+
+### Revenue Impact
+
+Track revenue generated through automation:
+
+```typescript
+interface RevenueMetrics {
+  bookingsMade: number;
+  conversionRate: number;
+  averageBookingValue: number;
+  totalRevenue: number;
+  revenueGrowth: number;
+}
+```
+
+From customer results:
+> "Las reservas online subieron un 40% el primer mes sin ningún esfuerzo adicional del equipo."
+> 
+> — Juan Rodríguez, Propietario — Restaurante El Molino
+
+<CardGroup cols={3}>
+  <Card title="40% increase" icon="arrow-trend-up">
+    In online bookings
+  </Card>
+  <Card title="24/7 availability" icon="moon">
+    Never miss opportunities
+  </Card>
+  <Card title="2 weeks" icon="calendar">
+    To recover investment
+  </Card>
+</CardGroup>
+
+### Efficiency Metrics
+
+Measure operational improvements:
+
+- **Conversations per agent**: How many conversations can be handled
+- **First contact resolution**: Issues resolved in first interaction
+- **Average handle time**: Time to complete conversations
+- **Automation rate**: % of conversations fully automated
+
+## Reports and Exports
+
+Generate reports for analysis and sharing.
+
+### Pre-Built Reports
+
+<CardGroup cols={2}>
+  <Card title="Daily Summary" icon="calendar-day">
+    Yesterday's key metrics and highlights
+  </Card>
+  <Card title="Weekly Performance" icon="calendar-week">
+    Week-over-week trends and analysis
+  </Card>
+  <Card title="Monthly Business Review" icon="chart-mixed">
+    Comprehensive monthly performance report
+  </Card>
+  <Card title="Custom Date Range" icon="calendar-range">
+    Flexible reporting for any period
+  </Card>
+</CardGroup>
+
+### Export Formats
+
+- **PDF**: Professional reports for stakeholders
+- **CSV**: Data for spreadsheet analysis
+- **Excel**: Formatted workbooks with charts
+- **JSON**: Raw data for custom integrations
+
+### Scheduled Reports
+
+Automate report delivery:
+
+- Daily/weekly/monthly schedules
+- Email distribution
+- Custom recipient lists
+- Report templates
+
+<Tip>
+  Set up weekly reports to be emailed to your team every Monday morning for a consistent performance review rhythm.
+</Tip>
+
+## Real-Time Monitoring
+
+Watch live conversations and metrics as they happen.
+
+### Live Dashboard
+
+Real-time view of current activity:
+
+```typescript
+interface LiveMetrics {
+  activeConversations: number;
+  queuedMessages: number;
+  agentsOnline: number;
+  averageWaitTime: number;
+  conversationsLastHour: number;
+  currentResponseTime: number;
+}
+```
+
+### Activity Feed
+
+Stream of recent events:
+
+- New conversations started
+- Bookings made
+- Handoffs to agents
+- Satisfaction ratings received
+- Issues resolved
+
+### Alerts and Notifications
+
+Get notified of important events:
+
+<Accordion title="Performance Alerts">
+  - Response time exceeds threshold
+  - Resolution rate drops below target
+  - Satisfaction score decreases
+  - Conversation volume spike
+</Accordion>
+
+<Accordion title="Customer Alerts">
+  - High-value customer contacts you
+  - Negative sentiment detected
+  - VIP customer needs attention
+  - Repeat issue from same customer
+</Accordion>
+
+<Accordion title="System Alerts">
+  - Bot confidence drops on topic
+  - Integration errors
+  - API rate limits approaching
+  - Calendar sync issues
+</Accordion>
+
+## Insights and Recommendations
+
+AI-powered suggestions to improve performance.
+
+### Automated Insights
+
+The system automatically identifies:
+
+- **Trending topics**: What customers are asking about most
+- **Performance gaps**: Areas where bot struggles
+- **Opportunities**: Potential improvements
+- **Anomalies**: Unusual patterns requiring attention
+
+### Optimization Recommendations
+
+Actionable suggestions:
+
+```typescript
+interface Recommendation {
+  type: "training" | "workflow" | "staffing" | "hours";
+  priority: "high" | "medium" | "low";
+  title: string;
+  description: string;
+  impact: string;
+  effort: "low" | "medium" | "high";
+}
+
+// Example
+const recommendation = {
+  type: "training",
+  priority: "high",
+  title: "Train bot on pricing questions",
+  description: "15% of handoffs are due to pricing questions the bot can't answer",
+  impact: "Could improve resolution rate by 10-15%",
+  effort: "low"
+};
+```
+
+<Info>
+  The system learns from every conversation and continuously suggests improvements to your bot's training.
+</Info>
+
+## Benchmarking
+
+Compare your performance against industry standards.
+
+### Industry Averages
+
+- **Resolution rate**: 70-85% (you want to be above this)
+- **Response time**: 2-5 seconds for chatbots
+- **Customer satisfaction**: 4.0-4.5 / 5.0
+- **Booking conversion**: 15-25%
+
+### Your Performance
+
+See how you stack up:
+
+```
+Your Resolution Rate: 87% ✅ (Industry: 78%)
+Your Response Time: 1.8s ✅ (Industry: 3.2s)
+Your Satisfaction: 4.7/5 ✅ (Industry: 4.2/5)
+Your Conversion: 32% ✅ (Industry: 20%)
+```
+
+<Note>
+  RespondeIA customers typically perform above industry averages due to the platform's AI capabilities and automation.
+</Note>
+
+## Integration with Other Features
+
+Analytics draws data from all platform features.
+
+### From AI Chatbot
+
+- Message volumes and patterns
+- Response times and quality
+- Intent recognition accuracy
+- Conversation flows
+
+See [AI Chatbot](/features/ai-chatbot) for conversation details.
+
+### From Appointment Scheduling
+
+- Booking conversion rates
+- Popular time slots
+- Cancellation patterns
+- No-show rates
+
+See [Appointment Scheduling](/features/appointment-scheduling) for booking details.
+
+### From CRM
+
+- Customer lifetime value
+- Retention metrics
+- Segment performance
+- Behavior patterns
+
+See [CRM Integration](/features/crm-integration) for customer data.
+
+### From Handoff System
+
+- Transfer rates and reasons
+- Agent performance
+- Resolution after handoff
+- Handoff patterns
+
+See [Handoff](/features/handoff) for agent transfer details.
+
+## Best Practices
+
+<Tip>
+  **Review daily**: Check your dashboard every morning to catch issues early and track progress.
+</Tip>
+
+<Tip>
+  **Set goals**: Establish target metrics (e.g., 85% resolution rate) and track progress toward them.
+</Tip>
+
+<Tip>
+  **Act on insights**: Don't just review metrics - implement the AI's recommendations for improvement.
+</Tip>
+
+<Tip>
+  **Share reports**: Distribute weekly reports to your team to keep everyone aligned on performance.
+</Tip>
+
+<Warning>
+  Don't obsess over single-day fluctuations. Focus on week-over-week and month-over-month trends for meaningful insights.
+</Warning>
+
+## Access and Permissions
+
+Control who sees what analytics data.
+
+### Dashboard Access
+
+From the routes configuration:
+
+```typescript
+export const ROUTES = {
+  DASHBOARD: {
+    ROOT: "/dashboard",
+    QUERIES: "/consultas",
+    SUPPORT: "/soporte"
+  }
+};
+```
+
+### User Roles
+
+- **Owner**: Full access to all metrics and reports
+- **Manager**: Access to team performance and customer metrics
+- **Agent**: Access to own performance and customer data
+- **Viewer**: Read-only access to aggregate metrics
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card title="AI Chatbot" icon="message-bot" href="/features/ai-chatbot">
+    Conversation data source for analytics
+  </Card>
+  <Card title="Appointment Scheduling" icon="calendar" href="/features/appointment-scheduling">
+    Booking metrics and conversion tracking
+  </Card>
+  <Card title="CRM Integration" icon="users" href="/features/crm-integration">
+    Customer behavior and lifetime value data
+  </Card>
+  <Card title="Handoff" icon="hand" href="/features/handoff">
+    Agent performance and transfer analytics
+  </Card>
+</CardGroup>

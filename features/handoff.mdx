@@ -1,0 +1,689 @@
+---
+title: 'Controlled Handoff to Human Agents'
+description: 'Seamless transfer to human agents when queries require personal attention'
+icon: 'hand-holding-hand'
+---
+
+# Controlled Handoff to Human Agents
+
+RespondeIA's intelligent handoff system seamlessly transfers conversations from AI to human agents when personal attention is required. The system transfers with complete context, ensuring smooth transitions and excellent customer experience.
+
+## Overview
+
+While the AI chatbot handles most customer inquiries automatically, some situations require human expertise or judgment. The handoff system detects these scenarios and transfers conversations intelligently.
+
+<CardGroup cols={2}>
+  <Card title="Context Preserved" icon="clipboard-list">
+    Full conversation history transferred to agent
+  </Card>
+  <Card title="Seamless Transfer" icon="arrows-turn-right">
+    Smooth transition without customer friction
+  </Card>
+  <Card title="Smart Detection" icon="brain">
+    AI knows when to request human help
+  </Card>
+  <Card title="Agent Ready" icon="user-check">
+    Complete context for immediate response
+  </Card>
+</CardGroup>
+
+<Note>
+  From the Features component: **"Cuando la consulta requiere atención humana, el sistema transfiere con contexto."** - When the query requires human attention, the system transfers with context.
+</Note>
+
+## When Handoff Occurs
+
+The AI chatbot transfers to human agents in specific situations.
+
+### Automatic Handoff Triggers
+
+<Accordion title="Low Confidence Responses">
+  When the AI's confidence in its response drops below a threshold:
+  
+  ```typescript
+  interface BotResponse {
+    text: string;
+    confidence: number; // 0-1 scale
+    requiresHandoff: boolean;
+  }
+  
+  // If confidence < 0.7, trigger handoff
+  if (response.confidence < 0.7) {
+    initiateHandoff({
+      reason: "low_confidence",
+      context: conversationHistory
+    });
+  }
+  ```
+  
+  The bot says:
+  ```
+  "Esta consulta requiere atención personalizada. 
+  Transfieroла conversación a [Agent Name] del equipo."
+  ```
+</Accordion>
+
+<Accordion title="Complex Requests">
+  Customer requests that require human judgment:
+  
+  - Custom quotes or special pricing
+  - Exception handling (policy violations)
+  - Complaints or escalations
+  - Negotiation or flexibility needed
+  - Multi-party coordination
+  
+  Example:
+  ```
+  Customer: "Necesito un evento para 50 personas el 15/06"
+  Bot: "Esta solicitud requiere atención personalizada.
+        Transfiero la conversación a María del equipo."
+  ```
+</Accordion>
+
+<Accordion title="Sensitive Topics">
+  Issues requiring empathy or delicate handling:
+  
+  - Medical or health concerns
+  - Legal questions
+  - Financial disputes
+  - Personal problems
+  - Emotional distress
+  
+  The AI recognizes sensitive language and transfers proactively.
+</Accordion>
+
+<Accordion title="Customer Request">
+  When customer explicitly asks for human help:
+  
+  ```
+  Customer: "Quiero hablar con una persona"
+  Customer: "Necesito ayuda humana"
+  Customer: "Transferirme con un agente"
+  ```
+  
+  The bot immediately initiates handoff without resistance.
+</Accordion>
+
+<Accordion title="Multiple Failed Attempts">
+  When the bot can't resolve the issue after several tries:
+  
+  ```typescript
+  if (conversationAttempts > 3 && !isResolved) {
+    initiateHandoff({
+      reason: "repeated_attempts",
+      attemptCount: conversationAttempts,
+      context: conversationHistory
+    });
+  }
+  ```
+</Accordion>
+
+<Accordion title="Negative Sentiment">
+  When sentiment analysis detects frustration or anger:
+  
+  ```typescript
+  interface SentimentScore {
+    overall: number; // -1 to 1
+    confidence: number;
+    emotion: "positive" | "neutral" | "negative" | "frustrated" | "angry";
+  }
+  
+  if (sentiment.emotion === "frustrated" || sentiment.overall < -0.5) {
+    initiateHandoff({
+      reason: "negative_sentiment",
+      urgency: "high"
+    });
+  }
+  ```
+</Accordion>
+
+## Handoff Process
+
+The transfer from bot to human follows a structured workflow.
+
+<Steps>
+  <Step title="Handoff trigger detected">
+    The AI recognizes that human assistance is needed based on one of the triggers above.
+  </Step>
+  
+  <Step title="Customer notification">
+    The bot informs the customer about the transfer:
+    
+    ```
+    Bot: "Esta consulta requiere atención personalizada.
+          Transfiero la conversación a María del equipo.
+          Ella responderá en breve con toda la información necesaria."
+    ```
+  </Step>
+  
+  <Step title="Context package created">
+    The system compiles all relevant information:
+    
+    ```typescript
+    interface HandoffContext {
+      customer: {
+        id: string;
+        name: string;
+        phone: string;
+        history: CustomerHistory;
+      };
+      conversation: {
+        messages: Message[];
+        intent: string;
+        sentiment: SentimentScore;
+        duration: number;
+      };
+      reason: string;
+      urgency: "low" | "medium" | "high";
+      suggestedActions: string[];
+    }
+    ```
+  </Step>
+  
+  <Step title="Agent assignment">
+    The system assigns an available agent based on:
+    
+    - Agent availability and online status
+    - Expertise/specialization match
+    - Current workload
+    - Customer history (previous agent)
+  </Step>
+  
+  <Step title="Agent receives context">
+    The agent sees a complete handoff package:
+    
+    ```
+    TRANSFERENCIA DE CONVERSACIÓN
+    
+    Cliente: María García
+    Teléfono: +54 9 11 1234-5678
+    Cliente desde: 3 meses atrás
+    
+    HISTORIAL:
+    - 4 turnos completados
+    - Último turno: 1 semana atrás
+    - Satisfacción promedio: 5/5
+    - Valor total: $12,500
+    
+    CONVERSACIÓN ACTUAL:
+    [10:45] Cliente: Quiero agendar un turno
+    [10:45] Bot: ¿Para qué día?
+    [10:46] Cliente: Para mi hijo, tratamiento de ortodoncia
+    [10:46] Bot: Requiere presupuesto personalizado
+    
+    MOTIVO DE TRANSFERENCIA:
+    Consulta compleja - requiere presupuesto detallado
+    para tratamiento de ortodoncia pediátrica
+    
+    ACCIONES SUGERIDAS:
+    - Revisar historial médico del paciente
+    - Preparar presupuesto para ortodoncia
+    - Ofrecer opciones de pago
+    ```
+  </Step>
+  
+  <Step title="Agent responds">
+    The agent takes over the conversation with full context:
+    
+    ```
+    Agent (María): ¡Hola! Soy María. Vi que necesitás presupuesto 
+    para ortodoncia para tu hijo. ¿Qué edad tiene?
+    ```
+    
+    The agent continues seamlessly, with no information lost.
+  </Step>
+</Steps>
+
+## Context Transfer Details
+
+The handoff includes comprehensive context to empower the agent.
+
+### Customer Information
+
+From the [CRM Integration](/features/crm-integration):
+
+```typescript
+interface CustomerContext {
+  // Basic info
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  
+  // History
+  customerSince: Date;
+  totalInteractions: number;
+  totalAppointments: number;
+  lastInteraction: Date;
+  
+  // Value
+  lifetimeValue: number;
+  averageTransactionValue: number;
+  
+  // Satisfaction
+  satisfactionScore: number;
+  npsScore: number;
+  
+  // Preferences
+  preferredContactTime: string;
+  tags: string[];
+  notes: string[];
+}
+```
+
+### Conversation History
+
+Complete message thread with metadata:
+
+```typescript
+interface ConversationContext {
+  id: string;
+  startedAt: Date;
+  duration: number;
+  messageCount: number;
+  
+  messages: Message[]; // Full conversation
+  
+  // Analysis
+  intent: string;
+  sentiment: SentimentScore;
+  topics: string[];
+  urgency: string;
+  
+  // Bot assessment
+  botConfidence: number;
+  attemptedResolutions: number;
+  knowledgeGaps: string[];
+}
+```
+
+### Appointment History
+
+From [Appointment Scheduling](/features/appointment-scheduling):
+
+```typescript
+interface AppointmentContext {
+  upcomingAppointments: Appointment[];
+  pastAppointments: Appointment[];
+  cancelledAppointments: Appointment[];
+  
+  stats: {
+    totalBooked: number;
+    completionRate: number;
+    noShowRate: number;
+    averageTimeSlot: string;
+  };
+}
+```
+
+### AI Assessment
+
+Bot's analysis of the situation:
+
+```typescript
+interface BotAssessment {
+  confidence: number;
+  knowledgeGaps: string[];
+  suggestedActions: string[];
+  relatedDocuments: string[];
+  similarPastCases: string[];
+  estimatedComplexity: "low" | "medium" | "high";
+}
+```
+
+## Agent Dashboard
+
+Human agents have a dedicated interface for handling transferred conversations.
+
+### Queue Management
+
+View all pending handoffs:
+
+```typescript
+interface HandoffQueue {
+  pending: HandoffRequest[];
+  inProgress: HandoffRequest[];
+  completed: HandoffRequest[];
+}
+
+interface HandoffRequest {
+  id: string;
+  customer: string;
+  reason: string;
+  urgency: "low" | "medium" | "high";
+  waitTime: number; // seconds
+  assignedTo?: string;
+  status: "pending" | "assigned" | "in_progress" | "resolved";
+}
+```
+
+### Priority Sorting
+
+Handoffs are prioritized by:
+
+1. **Urgency level** (high → medium → low)
+2. **Wait time** (longest waiting first)
+3. **Customer value** (VIP customers prioritized)
+4. **Issue type** (complaints before inquiries)
+
+### Agent Assignment
+
+From the routes configuration:
+
+```typescript
+export const ROUTES = {
+  DASHBOARD: {
+    ROOT: "/dashboard",
+    QUERIES: "/consultas",
+    SUPPORT: "/soporte"
+  }
+};
+```
+
+Agents access:
+- `/consultas` - Handle queries and general conversations
+- `/soporte` - Handle support and technical issues
+- `/dashboard` - Overview of all activity
+
+## Response Guidelines for Agents
+
+Best practices for handling transferred conversations.
+
+<Steps>
+  <Step title="Acknowledge the transfer">
+    Introduce yourself and acknowledge the context:
+    
+    ```
+    "¡Hola María! Soy [Agent Name] del equipo. 
+    Vi tu consulta sobre [topic]. Estoy aquí para ayudarte."
+    ```
+    
+    <Tip>
+      Reference specific details from the conversation to show you're informed.
+    </Tip>
+  </Step>
+  
+  <Step title="Validate understanding">
+    Confirm you understand the customer's need:
+    
+    ```
+    "Entiendo que necesitás [summarize need]. ¿Es correcto?"
+    ```
+  </Step>
+  
+  <Step title="Provide solution">
+    Address the issue with your expertise:
+    
+    - Use customer history to personalize
+    - Offer options when appropriate
+    - Be specific and actionable
+  </Step>
+  
+  <Step title="Confirm resolution">
+    Ensure the customer is satisfied:
+    
+    ```
+    "¿Esto resuelve tu consulta? ¿Hay algo más en lo que pueda ayudarte?"
+    ```
+  </Step>
+  
+  <Step title="Update records">
+    Document the resolution in the system for future reference.
+  </Step>
+</Steps>
+
+<Warning>
+  Never make the customer repeat information they already provided to the bot. Use the context package to continue seamlessly.
+</Warning>
+
+## Handoff Analytics
+
+Track handoff performance in the [Analytics Dashboard](/features/analytics).
+
+### Key Metrics
+
+```typescript
+interface HandoffMetrics {
+  // Volume
+  totalHandoffs: number;
+  handoffRate: number; // percentage of conversations
+  
+  // Timing
+  averageWaitTime: number; // seconds until agent responds
+  averageResolutionTime: number; // time to resolve
+  
+  // Quality
+  resolutionRate: number; // % resolved by agent
+  satisfactionScore: number; // customer satisfaction after handoff
+  
+  // Reasons
+  handoffReasons: Record<string, number>;
+  topReasons: Array<{ reason: string; count: number }>;
+}
+```
+
+### Monitoring Goals
+
+<CardGroup cols={3}>
+  <Card title="< 15%" icon="percentage">
+    Target handoff rate
+  </Card>
+  <Card title="< 2 min" icon="clock">
+    Target wait time
+  </Card>
+  <Card title="> 95%" icon="circle-check">
+    Target resolution rate
+  </Card>
+</CardGroup>
+
+### Improvement Opportunities
+
+Analytics reveal where the bot needs training:
+
+```typescript
+interface TrainingOpportunity {
+  reason: string;
+  frequency: number;
+  examples: string[];
+  suggestedTraining: string;
+  estimatedImpact: string;
+}
+
+// Example
+const opportunity = {
+  reason: "pricing_questions",
+  frequency: 45, // 45 handoffs per month
+  examples: [
+    "¿Cuánto cuesta el tratamiento completo?",
+    "Necesito presupuesto para ortodoncia",
+    "¿Tienen planes de pago?"
+  ],
+  suggestedTraining: "Add detailed pricing info and payment options to bot knowledge",
+  estimatedImpact: "Could reduce handoffs by 30-40%"
+};
+```
+
+<Tip>
+  Review handoff reasons monthly to identify training opportunities. Most handoffs can be eliminated with better bot training.
+</Tip>
+
+## Business Impact
+
+Effective handoff management improves both efficiency and customer satisfaction.
+
+### Customer Experience
+
+Seamless transitions maintain satisfaction:
+
+- **No information loss** - Customer doesn't repeat themselves
+- **Fast response** - Agent ready with context
+- **Personalized service** - Agent knows customer history
+- **Smooth transition** - No confusion or friction
+
+### Team Efficiency
+
+Context transfer saves agent time:
+
+```typescript
+// Without context transfer
+const timePerHandoff = 5; // minutes to understand issue
+const handoffsPerMonth = 60;
+const totalTimeWasted = 5 * 60 = 300; // minutes = 5 hours
+
+// With context transfer
+const timePerHandoff = 1; // minutes - agent immediately productive
+const timeSaved = 4 * 60 = 240; // minutes = 4 hours per month
+```
+
+<CardGroup cols={3}>
+  <Card title="80% faster" icon="bolt">
+    Agent starts with full context
+  </Card>
+  <Card title="No repeating" icon="ban">
+    Customer doesn't re-explain
+  </Card>
+  <Card title="Higher satisfaction" icon="star">
+    Smooth, efficient resolution
+  </Card>
+</CardGroup>
+
+### From Customer Testimonials
+
+> "Redujimos el 80% de los mensajes repetitivos. El equipo ahora se enfoca en tareas de mayor valor."
+> 
+> — María García, Directora — Clínica Dental Norte
+
+The handoff system enables this by:
+- Automating routine inquiries
+- Transferring only complex cases
+- Providing complete context for fast resolution
+- Freeing agents for high-value work
+
+## Configuration
+
+Customize handoff behavior for your business.
+
+### Handoff Rules
+
+Define when handoffs should occur:
+
+```typescript
+interface HandoffRule {
+  trigger: string;
+  condition: string;
+  action: "immediate" | "delayed" | "queued";
+  assignTo?: string; // specific agent or team
+  priority: "low" | "medium" | "high";
+}
+
+// Examples
+const rules = [
+  {
+    trigger: "customer_request",
+    condition: "always",
+    action: "immediate",
+    priority: "high"
+  },
+  {
+    trigger: "low_confidence",
+    condition: "confidence < 0.7",
+    action: "queued",
+    priority: "medium"
+  },
+  {
+    trigger: "vip_customer",
+    condition: "customerValue > 10000",
+    action: "immediate",
+    assignTo: "senior_team",
+    priority: "high"
+  }
+];
+```
+
+### Agent Availability
+
+Manage agent schedules:
+
+- Online/offline status
+- Working hours
+- Break times
+- Maximum concurrent conversations
+- Specialization areas
+
+### Fallback Behavior
+
+When no agents are available:
+
+1. **Queue the handoff** - Customer notified of wait time
+2. **Collect information** - Bot gathers details for agent
+3. **Set expectations** - "An agent will respond within [time]"
+4. **Send notification** - Alert agents of waiting customer
+
+<Note>
+  From customer feedback: "Atendemos clientes a las 3am sin personal adicional." - The bot handles most inquiries even outside business hours, only queuing complex issues for next-day agent response.
+</Note>
+
+## Best Practices
+
+<Tip>
+  **Train the bot first**: Most handoffs can be eliminated with better bot training. Review handoff reasons monthly.
+</Tip>
+
+<Tip>
+  **Respond quickly**: Aim for under 2 minutes from handoff to agent response. Customers expect fast service.
+</Tip>
+
+<Tip>
+  **Use the context**: Read the handoff package before responding. Don't make customers repeat information.
+</Tip>
+
+<Tip>
+  **Document resolutions**: Add notes to customer profiles so future interactions benefit from learned information.
+</Tip>
+
+<Warning>
+  Don't transfer too readily. Let the bot attempt resolution first. Premature handoffs defeat the purpose of automation.
+</Warning>
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card title="AI Chatbot" icon="message-bot" href="/features/ai-chatbot">
+    How the bot handles conversations before handoff
+  </Card>
+  <Card title="CRM Integration" icon="users" href="/features/crm-integration">
+    Customer context transferred to agents
+  </Card>
+  <Card title="Analytics" icon="chart-line" href="/features/analytics">
+    Track handoff metrics and performance
+  </Card>
+  <Card title="Appointment Scheduling" icon="calendar" href="/features/appointment-scheduling">
+    Booking context in handoffs
+  </Card>
+</CardGroup>
+
+## Setup Process
+
+From the methodology component:
+
+<Steps>
+  <Step title="Configure team" icon="users">
+    Add team members and set their roles, specializations, and availability.
+  </Step>
+  
+  <Step title="Define rules" icon="list">
+    Set up handoff triggers and conditions based on your business needs.
+  </Step>
+  
+  <Step title="Train agents" icon="graduation-cap">
+    Ensure agents understand how to use the context package and dashboard.
+  </Step>
+  
+  <Step title="Monitor performance" icon="chart-line">
+    Track handoff metrics and optimize rules based on data.
+  </Step>
+</Steps>
+
+<Info>
+  The handoff system is included in all RespondeIA plans. No additional setup required beyond adding team members.
+</Info>

@@ -1,0 +1,392 @@
+---
+title: Card
+description: Flexible card container component with header, content, footer, and action areas
+---
+
+A composable card component system that provides a structured layout for displaying grouped content with optional headers, descriptions, actions, and footers.
+
+## Installation
+
+The Card component is built with:
+- Compound component pattern for flexible composition
+- Container queries support (`@container`)
+- Custom utility functions from `@/lib/utils`
+
+## Basic Usage
+
+<CodeGroup>
+```tsx Simple Card
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+export default function Example() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Card Title</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>Card content goes here.</p>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+```tsx Full Card
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardAction,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+
+export default function Example() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Feature Overview</CardTitle>
+        <CardDescription>
+          Learn about our latest features
+        </CardDescription>
+        <CardAction>
+          <Button size="sm">View</Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <p>Detailed information about the feature...</p>
+      </CardContent>
+      <CardFooter>
+        <p className="text-sm text-muted-foreground">Last updated: Today</p>
+      </CardFooter>
+    </Card>
+  );
+}
+```
+</CodeGroup>
+
+## Card Sizes
+
+<Tabs>
+  <Tab title="Default">
+    ```tsx
+    <Card size="default">
+      <CardHeader>
+        <CardTitle>Default Size Card</CardTitle>
+      </CardHeader>
+      <CardContent>
+        Standard spacing and padding (16px)
+      </CardContent>
+    </Card>
+    ```
+    Default size with 16px padding and 16px gap.
+  </Tab>
+  
+  <Tab title="Small">
+    ```tsx
+    <Card size="sm">
+      <CardHeader>
+        <CardTitle>Small Card</CardTitle>
+      </CardHeader>
+      <CardContent>
+        Compact spacing (12px)
+      </CardContent>
+    </Card>
+    ```
+    Smaller variant with 12px padding and 12px gap.
+  </Tab>
+</Tabs>
+
+## Card Components
+
+### Card (Container)
+
+The main container component:
+
+```tsx
+<Card size="default">
+  {/* Card content */}
+</Card>
+```
+
+### CardHeader
+
+Header section with grid layout for title, description, and actions:
+
+```tsx
+<CardHeader>
+  <CardTitle>Title</CardTitle>
+  <CardDescription>Description text</CardDescription>
+  <CardAction>
+    <Button>Action</Button>
+  </CardAction>
+</CardHeader>
+```
+
+### CardTitle
+
+Bold title text:
+
+```tsx
+<CardTitle>Your Title Here</CardTitle>
+```
+
+### CardDescription
+
+Muted descriptive text below title:
+
+```tsx
+<CardDescription>
+  Additional context or subtitle
+</CardDescription>
+```
+
+### CardAction
+
+Action button area positioned in the header:
+
+```tsx
+<CardAction>
+  <Button size="sm" variant="ghost">
+    <MoreVertical className="h-4 w-4" />
+  </Button>
+</CardAction>
+```
+
+### CardContent
+
+Main content area:
+
+```tsx
+<CardContent>
+  <p>Your main content...</p>
+</CardContent>
+```
+
+### CardFooter
+
+Footer section with border-top and muted background:
+
+```tsx
+<CardFooter>
+  <div className="flex justify-between w-full">
+    <span>Footer content</span>
+    <Button variant="link">Learn more</Button>
+  </div>
+</CardFooter>
+```
+
+## Real-World Examples
+
+### Stats Card
+
+```tsx
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+export function StatsCard({ title, value, change }: StatsCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        <p className="text-xs text-green-600">{change}</p>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+### Product Card with Image
+
+```tsx
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+
+export function ProductCard({ product }: { product: Product }) {
+  return (
+    <Card>
+      <Image
+        src={product.image}
+        alt={product.name}
+        width={400}
+        height={300}
+        className="w-full object-cover"
+      />
+      <CardHeader>
+        <CardTitle>{product.name}</CardTitle>
+        <CardDescription>${product.price}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm">{product.description}</p>
+      </CardContent>
+      <CardFooter>
+        <Button className="w-full">Add to Cart</Button>
+      </CardFooter>
+    </Card>
+  );
+}
+```
+
+### Settings Card with Action
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardAction,
+  CardContent,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
+
+export function SettingsCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Notification Settings</CardTitle>
+        <CardDescription>
+          Manage how you receive notifications
+        </CardDescription>
+        <CardAction>
+          <Button size="icon-sm" variant="ghost">
+            <Settings className="h-4 w-4" />
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        {/* Settings controls */}
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+## Props
+
+### Card
+
+<ParamField path="size" type="string" default="default">
+  Card size variant
+  
+  Options: `default` | `sm`
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card container
+</ParamField>
+
+### CardHeader, CardTitle, CardDescription, CardAction, CardContent, CardFooter
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the component
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Content to render inside the component
+</ParamField>
+
+## Layout Behavior
+
+### Header Grid Layout
+
+The CardHeader uses CSS Grid with intelligent layout:
+- Default: Single column
+- With CardAction: `grid-cols-[1fr_auto]` (content takes remaining space, action is auto-sized)
+- With CardDescription: `grid-rows-[auto_auto]` (two rows)
+- CardAction spans both rows and aligns to top-right
+
+### Image Handling
+
+- First child image: Rounded top corners (`rounded-t-xl`)
+- Last child image: Rounded bottom corners (`rounded-b-xl`)
+- Image as first child: Parent card removes top padding
+
+### Footer Behavior
+
+- Auto-detects CardFooter presence using `has-data-[slot=card-footer]`
+- Removes bottom padding from card when footer exists
+- Footer includes border-top and muted background
+
+## Styling Details
+
+- Border radius: `rounded-xl` (12px)
+- Background: Uses `bg-card` theme color
+- Ring: 1px foreground ring at 10% opacity
+- Gap: 16px (default) or 12px (small)
+- Padding: 16px (default) or 12px (small)
+- Footer border: Top border with muted background
+
+## Accessibility
+
+- Semantic HTML structure with `div` elements
+- Use proper heading levels inside CardTitle
+- CardDescription provides context for screen readers
+- Ensure CardAction buttons have proper labels
+
+## TypeScript
+
+```tsx
+type CardProps = React.ComponentProps<"div"> & {
+  size?: "default" | "sm";
+};
+
+type CardHeaderProps = React.ComponentProps<"div">;
+type CardTitleProps = React.ComponentProps<"div">;
+type CardDescriptionProps = React.ComponentProps<"div">;
+type CardActionProps = React.ComponentProps<"div">;
+type CardContentProps = React.ComponentProps<"div">;
+type CardFooterProps = React.ComponentProps<"div">;
+```
+
+## Advanced Patterns
+
+### Conditional Footer
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Dynamic Card</CardTitle>
+  </CardHeader>
+  <CardContent>
+    Content here
+  </CardContent>
+  {showFooter && (
+    <CardFooter>
+      Footer content
+    </CardFooter>
+  )}
+</Card>
+```
+
+### Nested Cards
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Parent Card</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-4">
+    <Card size="sm">
+      <CardHeader>
+        <CardTitle>Nested Card 1</CardTitle>
+      </CardHeader>
+      <CardContent>Content</CardContent>
+    </Card>
+    <Card size="sm">
+      <CardHeader>
+        <CardTitle>Nested Card 2</CardTitle>
+      </CardHeader>
+      <CardContent>Content</CardContent>
+    </Card>
+  </CardContent>
+</Card>
+```

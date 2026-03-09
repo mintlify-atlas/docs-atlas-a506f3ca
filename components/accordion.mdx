@@ -1,0 +1,462 @@
+---
+title: Accordion
+description: Collapsible content sections built on Radix UI with smooth animations
+---
+
+An accessible accordion component for displaying collapsible content sections with smooth animations and keyboard navigation.
+
+## Installation
+
+The Accordion component is built with:
+- Radix UI Accordion primitive
+- Lucide React for chevron icons
+- Custom animations for expand/collapse
+- Custom utility functions from `@/lib/utils`
+
+## Basic Usage
+
+<CodeGroup>
+```tsx Single Accordion
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+
+export default function Example() {
+  return (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>What is RespondeIA?</AccordionTrigger>
+        <AccordionContent>
+          RespondeIA is a SaaS platform for WhatsApp AI customer service automation.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+```
+
+```tsx Multiple Items
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+
+export default function Example() {
+  return (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Question 1</AccordionTrigger>
+        <AccordionContent>
+          Answer to question 1
+        </AccordionContent>
+      </AccordionItem>
+      
+      <AccordionItem value="item-2">
+        <AccordionTrigger>Question 2</AccordionTrigger>
+        <AccordionContent>
+          Answer to question 2
+        </AccordionContent>
+      </AccordionItem>
+      
+      <AccordionItem value="item-3">
+        <AccordionTrigger>Question 3</AccordionTrigger>
+        <AccordionContent>
+          Answer to question 3
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+```
+</CodeGroup>
+
+## Accordion Types
+
+<Tabs>
+  <Tab title="Single (Collapsible)">
+    ```tsx
+    <Accordion type="single" collapsible>
+      {/* Only one item can be open at a time */}
+      {/* Items can be collapsed */}
+    </Accordion>
+    ```
+    Only one item can be expanded at a time. Clicking an open item will collapse it.
+  </Tab>
+  
+  <Tab title="Single (Always Open)">
+    ```tsx
+    <Accordion type="single">
+      {/* Only one item open at a time */}
+      {/* One item must always be open */}
+    </Accordion>
+    ```
+    Only one item expanded at a time. One item must always remain open.
+  </Tab>
+  
+  <Tab title="Multiple">
+    ```tsx
+    <Accordion type="multiple">
+      {/* Multiple items can be open simultaneously */}
+    </Accordion>
+    ```
+    Multiple items can be expanded at the same time.
+  </Tab>
+</Tabs>
+
+## Real-World Example
+
+### FAQ Section
+
+From `modules/landing/components/Faq.tsx:40-55`:
+
+```tsx
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
+const faqs = [
+  {
+    value: "tech",
+    q: "¿Se requiere conocimiento técnico?",
+    a: "No. Todo se configura desde un panel visual guiado. No es necesario escribir código ni contar con un equipo de IT.",
+  },
+  {
+    value: "whatsapp",
+    q: "¿Puedo usar mi número de WhatsApp actual?",
+    a: "Sí. Podés migrar tu número existente a la API oficial de Meta. El proceso es guiado y tarda menos de diez minutos.",
+  },
+  {
+    value: "time",
+    q: "¿Quanto tiempo lleva la configuración inicial?",
+    a: "El promedio de nuestros clientes es de 8 minutos desde el registro hasta el bot activo respondiendo mensajes.",
+  },
+  {
+    value: "commitment",
+    q: "¿Hay compromiso de permanencia?",
+    a: "No. La suscripción se puede cancelar en cualquier momento desde el panel, sin cargos adicionales ni gestiones externas.",
+  },
+];
+
+export function Faq() {
+  return (
+    <section className="pt-10 bg-white pb-1">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h2 className="mb-12">Preguntas Frecuentes</h2>
+        
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {faqs.map((faq) => (
+            <AccordionItem
+              key={faq.value}
+              value={faq.value}
+              className="border-b border-zinc-100 py-2"
+            >
+              <AccordionTrigger className="hover:no-underline group">
+                <h4 className="text-left text-[17px] font-bold text-zinc-900 group-hover:text-blue-600 transition-colors">
+                  {faq.q}
+                </h4>
+              </AccordionTrigger>
+              <AccordionContent>
+                <p className="text-zinc-500 leading-relaxed max-w-2xl pt-2">
+                  {faq.a}
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    </section>
+  );
+}
+```
+
+## Advanced Examples
+
+### Styled Accordion Items
+
+```tsx
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+
+export function StyledAccordion() {
+  return (
+    <Accordion type="single" collapsible className="w-full space-y-4">
+      <AccordionItem value="item-1" className="border rounded-lg px-4">
+        <AccordionTrigger className="hover:no-underline">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <span className="text-blue-600 font-bold">1</span>
+            </div>
+            <span className="font-semibold">First Step</span>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent>
+          <p className="text-muted-foreground ml-13">
+            Detailed information about the first step...
+          </p>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+```
+
+### Accordion with Rich Content
+
+```tsx
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+
+export function RichAccordion() {
+  return (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="features">
+        <AccordionTrigger>View Features</AccordionTrigger>
+        <AccordionContent>
+          <div className="space-y-4">
+            <p>Our platform includes:</p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>AI-powered responses</li>
+              <li>24/7 availability</li>
+              <li>Multi-language support</li>
+            </ul>
+            <Button variant="link" className="p-0">
+              Learn more about features →
+            </Button>
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+```
+
+### Multiple Accordion Type
+
+```tsx
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+
+export function MultipleAccordion() {
+  return (
+    <Accordion type="multiple" className="w-full">
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Can I open multiple items?</AccordionTrigger>
+        <AccordionContent>
+          Yes! This accordion allows multiple items to be open at once.
+        </AccordionContent>
+      </AccordionItem>
+      
+      <AccordionItem value="item-2">
+        <AccordionTrigger>Try opening this one too</AccordionTrigger>
+        <AccordionContent>
+          Both items can remain open simultaneously.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+```
+
+## Props
+
+### Accordion
+
+<ParamField path="type" type="string" required>
+  Accordion behavior type
+  
+  Options: `single` | `multiple`
+</ParamField>
+
+<ParamField path="collapsible" type="boolean">
+  When `type="single"`, allows collapsing the open item. Not applicable for `type="multiple"`.
+</ParamField>
+
+<ParamField path="defaultValue" type="string | string[]">
+  Default open item(s). Use string for `type="single"` or array of strings for `type="multiple"`.
+</ParamField>
+
+<ParamField path="value" type="string | string[]">
+  Controlled open item(s). Requires `onValueChange`.
+</ParamField>
+
+<ParamField path="onValueChange" type="function">
+  Callback when open items change: `(value: string | string[]) => void`
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the accordion container
+</ParamField>
+
+### AccordionItem
+
+<ParamField path="value" type="string" required>
+  Unique identifier for this accordion item
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the item container
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables interaction with this item
+</ParamField>
+
+### AccordionTrigger
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the trigger button
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Content to display in the trigger (typically the question/title)
+</ParamField>
+
+### AccordionContent
+
+<ParamField path="className" type="string">
+  Additional CSS classes for the content wrapper
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Content to display when expanded (the answer/details)
+</ParamField>
+
+## Controlled vs Uncontrolled
+
+<CodeGroup>
+```tsx Uncontrolled (Recommended)
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+
+export default function Example() {
+  return (
+    <Accordion type="single" collapsible defaultValue="item-1">
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Question</AccordionTrigger>
+        <AccordionContent>Answer</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+```
+
+```tsx Controlled
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { useState } from "react";
+
+export default function Example() {
+  const [value, setValue] = useState<string | undefined>("item-1");
+  
+  return (
+    <Accordion
+      type="single"
+      collapsible
+      value={value}
+      onValueChange={setValue}
+    >
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Question</AccordionTrigger>
+        <AccordionContent>Answer</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+```
+</CodeGroup>
+
+## Animations
+
+The accordion uses custom animations defined in your Tailwind configuration:
+
+- **accordion-down**: Smooth expand animation
+- **accordion-up**: Smooth collapse animation
+- Applied via `data-open` and `data-closed` states
+- Height transitions use CSS variables: `h-(--radix-accordion-content-height)`
+
+## Accessibility
+
+- Built on Radix UI Accordion primitive (WAI-ARIA compliant)
+- Full keyboard navigation support:
+  - `Tab` to focus trigger
+  - `Space` or `Enter` to toggle
+  - Arrow keys to navigate between triggers (when focused)
+- `aria-expanded` automatically managed
+- Focus-visible styles with ring and border
+- Disabled state support
+- Screen reader announcements for expand/collapse
+
+## Icon Behavior
+
+The AccordionTrigger includes automatic icon switching:
+
+- **Collapsed state**: ChevronDownIcon visible
+- **Expanded state**: ChevronUpIcon visible
+- Icons are automatically positioned at the end of the trigger
+- Icons use `text-muted-foreground` color
+- Custom icons can be added using the `data-slot="accordion-trigger-icon"` attribute
+
+## Styling Details
+
+- Trigger hover: Underline effect
+- Focus-visible: 3px ring with 50% opacity
+- Default border: Bottom border on each item except last
+- Content padding: Top 0, bottom 10px (2.5 spacing units)
+- Links in content: Underlined with offset, hover color change
+- Paragraph spacing: Bottom margin on all but last paragraph
+
+## TypeScript
+
+```tsx
+import type { AccordionPrimitive } from "radix-ui";
+
+type AccordionProps = React.ComponentProps<typeof AccordionPrimitive.Root>;
+type AccordionItemProps = React.ComponentProps<typeof AccordionPrimitive.Item>;
+type AccordionTriggerProps = React.ComponentProps<typeof AccordionPrimitive.Trigger>;
+type AccordionContentProps = React.ComponentProps<typeof AccordionPrimitive.Content>;
+```
+
+## Common Patterns
+
+### Remove Trigger Underline
+
+```tsx
+<AccordionTrigger className="hover:no-underline">
+  Question without underline on hover
+</AccordionTrigger>
+```
+
+### Custom Spacing Between Items
+
+```tsx
+<Accordion type="single" collapsible className="space-y-4">
+  {/* Items will have 16px gap between them */}
+</Accordion>
+```
+
+### Border Customization
+
+```tsx
+<AccordionItem value="item-1" className="border-b-2 border-blue-200">
+  {/* Custom border style */}
+</AccordionItem>
+```

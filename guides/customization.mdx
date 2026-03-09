@@ -1,0 +1,680 @@
+---
+title: 'Chatbot Customization'
+description: 'Customize and train your WhatsApp AI assistant with your business information'
+icon: 'wand-magic-sparkles'
+---
+
+## Overview
+
+RespondeIA's AI chatbot can be fully customized to match your business needs, brand voice, and customer service requirements. This guide covers everything from basic setup to advanced AI training.
+
+<Info>
+  **Quick Setup Time: 8 Minutes Average**
+  
+  Most businesses complete initial customization in under 10 minutes using our guided form system.
+</Info>
+
+## Customization Process
+
+The customization workflow follows a structured 4-step methodology:
+
+```typescript
+// From Methodology.tsx - Complete setup process
+const steps = [
+  {
+    id: "01",
+    title: "Cargá tu negocio",
+    description: "Horarios, servicios y precios. La IA aprende todo desde un formulario guiado.",
+  },
+  {
+    id: "02",
+    title: "Conectá WhatsApp",
+    description: "Verificás tu número Business con un código. Compatible con números existentes.",
+  },
+  {
+    id: "03",
+    title: "La IA responde",
+    description: "Tu asistente virtual gestiona consultas, turnos y ventas en tiempo real.",
+  },
+  {
+    id: "04",
+    title: "Medís el impacto",
+    description: "Dashboard con métricas de conversaciones, resoluciones y satisfacción.",
+  },
+];
+```
+
+## Step 1: Business Information Setup
+
+<Steps>
+  <Step title="Access Configuration">
+    Navigate to your dashboard at `/dashboard` after logging in.
+  </Step>
+  
+  <Step title="Complete Guided Form">
+    Fill in your business details through the structured form:
+    
+    ### Required Information
+    
+    <CardGroup cols={2}>
+      <Card title="Business Hours" icon="clock">
+        - Operating days and times
+        - Holiday schedules
+        - Timezone settings
+        - After-hours messaging
+      </Card>
+      
+      <Card title="Services & Products" icon="box">
+        - Service catalog
+        - Product descriptions
+        - Pricing information
+        - Availability status
+      </Card>
+      
+      <Card title="Contact Information" icon="address-card">
+        - Business name and location
+        - Contact methods
+        - Social media links
+        - Physical address (if applicable)
+      </Card>
+      
+      <Card title="Common Questions" icon="question">
+        - FAQ library
+        - Standard responses
+        - Policy information
+        - Special instructions
+      </Card>
+    </CardGroup>
+  </Step>
+  
+  <Step title="Upload Supporting Documents">
+    Optionally provide:
+    - Product catalogs (PDF)
+    - Service menus
+    - Pricing sheets
+    - Brand guidelines
+  </Step>
+</Steps>
+
+<Tip>
+  The more information you provide, the more accurate and helpful your AI assistant will be. You can update this information anytime.
+</Tip>
+
+## Step 2: WhatsApp Integration
+
+### Connecting Your Number
+
+<Steps>
+  <Step title="Prepare WhatsApp Business">
+    Ensure you have:
+    - WhatsApp Business Account (not personal)
+    - Business verification completed
+    - Admin access to the account
+    - Phone number ready for verification
+  </Step>
+  
+  <Step title="Verify Your Number">
+    ```typescript
+    // Verification process from Methodology.tsx
+    {
+      title: "Conectá WhatsApp",
+      description: "Verificás tu número Business con un código. 
+                   Compatible con números existentes."
+    }
+    ```
+    
+    1. Enter your WhatsApp Business number
+    2. Receive verification code via SMS or call
+    3. Enter code in RespondeIA dashboard
+    4. Confirm connection
+  </Step>
+  
+  <Step title="Test Connection">
+    Send a test message to verify:
+    - AI receives messages instantly
+    - Responses are properly formatted
+    - Connection is stable
+  </Step>
+</Steps>
+
+<Warning>
+  **Existing Number Compatibility**
+  
+  RespondeIA works with existing WhatsApp Business numbers without disruption. Your current setup and message history remain intact.
+</Warning>
+
+## AI Training & Personalization
+
+### Conversational AI Features
+
+```typescript
+// From Features.tsx - AI capabilities
+const features = [
+  {
+    title: "IA conversacional",
+    description: "Respuestas naturales entrenadas con la información de tu negocio.",
+    icon: "💬",
+  },
+  // ... more features
+];
+```
+
+<Tabs>
+  <Tab title="Response Training">
+    ### Customize AI Responses
+    
+    Train your AI to respond authentically to common queries:
+    
+    <Steps>
+      <Step title="Define Response Patterns">
+        Set up responses for:
+        - Product inquiries
+        - Pricing questions
+        - Service availability
+        - Operating hours
+        - Location and directions
+      </Step>
+      
+      <Step title="Set Brand Voice">
+        Configure tone and style:
+        - Formal vs. casual language
+        - Industry-specific terminology
+        - Emoji usage preferences
+        - Greeting and closing phrases
+      </Step>
+      
+      <Step title="Add Example Conversations">
+        Provide sample dialogues to improve AI accuracy:
+        ```
+        Customer: "¿Cuánto cuesta una consulta?"
+        AI: "Nuestras consultas tienen un costo de $50 USD. 
+             ¿Te gustaría agendar una cita?"
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+  
+  <Tab title="Advanced Training">
+    ### Pro & Agency Features
+    
+    <Info>
+      Available in **Pro** and **Agencia** plans:
+      
+      ```typescript
+      // From get-plans.ts
+      features: [
+        "IA personalizada avanzada",  // Advanced custom AI
+        // ...
+      ]
+      ```
+    </Info>
+    
+    #### Advanced Customization Options
+    
+    - **Context Retention**: AI remembers previous conversations
+    - **Multi-Language Support**: Automatic language detection
+    - **Sentiment Analysis**: Detect customer mood and adjust tone
+    - **Intent Recognition**: Understand complex multi-part queries
+    - **Custom Workflows**: Build conditional response flows
+    - **A/B Testing**: Test different response variations
+  </Tab>
+  
+  <Tab title="Integration Training">
+    ### Connect External Systems
+    
+    Train AI to work with your existing tools:
+    
+    <CardGroup cols={2}>
+      <Card title="CRM Integration" icon="users">
+        ```typescript
+        // From get-plans.ts - Pro feature
+        {
+          features: ["CRM de contactos"]
+        }
+        ```
+        
+        - Auto-create contacts
+        - Update customer records
+        - Pull historical data
+        - Sync interaction logs
+      </Card>
+      
+      <Card title="Calendar Sync" icon="calendar">
+        ```typescript
+        {
+          title: "Agenda automática",
+          description: "El asistente gestiona turnos y citas 
+                       directamente en la conversación.",
+          icon: "📅"
+        }
+        ```
+        
+        - Check availability
+        - Book appointments
+        - Send reminders
+        - Handle rescheduling
+      </Card>
+      
+      <Card title="Payment Processing" icon="credit-card">
+        - MercadoPago integration
+        - Payment link generation
+        - Transaction tracking
+        - Receipt delivery
+      </Card>
+      
+      <Card title="Inventory Systems" icon="warehouse">
+        - Real-time stock checking
+        - Product availability
+        - Automated reorder alerts
+        - Catalog updates
+      </Card>
+    </CardGroup>
+  </Tab>
+</Tabs>
+
+## Automated Scheduling Configuration
+
+### Appointment Management Setup
+
+<Steps>
+  <Step title="Define Service Duration">
+    Set standard appointment lengths:
+    - Consultation: 30 minutes
+    - Service appointment: 1 hour
+    - Initial visit: 45 minutes
+  </Step>
+  
+  <Step title="Configure Availability">
+    ```typescript
+    // Calendar configuration
+    {
+      monday: { start: "09:00", end: "18:00" },
+      tuesday: { start: "09:00", end: "18:00" },
+      // ... other days
+      sunday: { closed: true }
+    }
+    ```
+  </Step>
+  
+  <Step title="Set Booking Rules">
+    - Minimum advance notice (e.g., 2 hours)
+    - Maximum booking window (e.g., 30 days)
+    - Buffer time between appointments
+    - Cancellation policy and timing
+  </Step>
+  
+  <Step title="Customize Confirmations">
+    Design automated messages for:
+    - Booking confirmation
+    - 24-hour reminders
+    - Day-of notifications
+    - Cancellation acknowledgments
+  </Step>
+</Steps>
+
+<Note>
+  **Automatic Scheduling Feature**
+  
+  Available in all plans. AI handles the complete booking process:
+  1. Customer requests appointment
+  2. AI checks availability
+  3. Suggests available slots
+  4. Confirms booking
+  5. Sends automatic reminders
+</Note>
+
+## Transfer & Escalation Rules
+
+### Human Handoff Configuration
+
+```typescript
+// From Features.tsx
+{
+  title: "Traspaso controlado",
+  description: "Cuando la consulta requiere atención humana, 
+               el sistema transfiere con contexto.",
+  icon: "🔄",
+}
+```
+
+<Steps>
+  <Step title="Define Transfer Triggers">
+    Set conditions for escalating to human agents:
+    
+    - Customer explicitly requests human help
+    - AI confidence score below threshold
+    - Sensitive topics (complaints, refunds)
+    - Complex technical questions
+    - VIP customer detection
+  </Step>
+  
+  <Step title="Configure Transfer Message">
+    Customize the handoff notification:
+    ```
+    "Voy a conectarte con un miembro de nuestro equipo 
+     que puede ayudarte mejor con esto. Un momento..."
+    ```
+  </Step>
+  
+  <Step title="Set Agent Notification">
+    Choose how agents are notified:
+    - Dashboard alert
+    - Email notification
+    - SMS to on-call agent
+    - Webhook to external system
+  </Step>
+  
+  <Step title="Provide Context Transfer">
+    Ensure agents receive:
+    - Complete conversation history
+    - Customer information from CRM
+    - AI's confidence assessment
+    - Suggested response paths
+  </Step>
+</Steps>
+
+<Tip>
+  Set conservative transfer rules initially. Monitor AI performance and adjust thresholds as the system learns.
+</Tip>
+
+## Performance Optimization
+
+### Response Time Configuration
+
+```typescript
+// From Features.tsx
+{
+  title: "Respuesta inmediata",
+  description: "Menos de dos segundos de latencia promedio, disponible 24/7.",
+  icon: "⚡",
+}
+```
+
+<CardGroup cols={2}>
+  <Card title="Target: Under 2 Seconds" icon="gauge-high">
+    System optimized for:
+    - 1.4s average response time
+    - Under 500ms for cached responses
+    - Under 3s for complex queries
+    - 24/7 availability
+  </Card>
+  
+  <Card title="Optimization Tips" icon="bolt">
+    Improve performance by:
+    - Pre-defining common responses
+    - Using template messages
+    - Caching frequent queries
+    - Streamlining workflows
+  </Card>
+</CardGroup>
+
+## Testing Your Customization
+
+### Pre-Launch Checklist
+
+<Steps>
+  <Step title="Test Common Scenarios">
+    Simulate typical customer conversations:
+    
+    <AccordionGroup>
+      <Accordion title="Product Inquiry Test">
+        ```
+        Test: "¿Qué servicios ofrecen?"
+        Expected: List of services with pricing
+        Verify: Accurate information, friendly tone
+        ```
+      </Accordion>
+      
+      <Accordion title="Booking Test">
+        ```
+        Test: "Quiero agendar una cita para mañana"
+        Expected: Available time slots for tomorrow
+        Verify: Calendar integration, confirmation message
+        ```
+      </Accordion>
+      
+      <Accordion title="Complex Query Test">
+        ```
+        Test: "¿Hacen envíos internacionales y aceptan dólares?"
+        Expected: Multi-part response or human transfer
+        Verify: Handles complexity appropriately
+        ```
+      </Accordion>
+      
+      <Accordion title="Transfer Test">
+        ```
+        Test: "Necesito hablar con el gerente"
+        Expected: Polite acknowledgment + transfer
+        Verify: Agent receives full context
+        ```
+      </Accordion>
+    </AccordionGroup>
+  </Step>
+  
+  <Step title="Verify Integrations">
+    - CRM contact creation
+    - Calendar appointment booking
+    - Payment link generation
+    - Email/SMS notifications
+  </Step>
+  
+  <Step title="Review Analytics Setup">
+    Confirm tracking for:
+    - Message volume
+    - Response accuracy
+    - Transfer rate
+    - Customer satisfaction
+    - Resolution time
+  </Step>
+  
+  <Step title="Soft Launch">
+    Start with limited exposure:
+    1. Test with internal team first
+    2. Invite select customers for beta testing
+    3. Monitor closely for 48 hours
+    4. Adjust based on feedback
+    5. Full launch when confident
+  </Step>
+</Steps>
+
+## Continuous Improvement
+
+### Monitoring & Iteration
+
+<Info>
+  **Analytics Dashboard Access**
+  
+  ```typescript
+  // From Features.tsx
+  {
+    title: "Analytics en tiempo real",
+    description: "Tasa de resolución y satisfacción en un solo panel.",
+    icon: "📊"
+  }
+  ```
+  
+  Track performance at `/dashboard` to identify improvement opportunities.
+</Info>
+
+### Weekly Optimization Tasks
+
+<Steps>
+  <Step title="Review Unresolved Queries">
+    Identify questions AI struggled with:
+    - Low confidence responses
+    - Frequent transfers
+    - Customer clarification requests
+    - Negative sentiment feedback
+  </Step>
+  
+  <Step title="Update Training Data">
+    Add new information based on:
+    - New products/services
+    - Updated pricing
+    - Seasonal changes
+    - Common new questions
+  </Step>
+  
+  <Step title="A/B Test Responses">
+    (Pro/Agency plans)
+    
+    Test variations of:
+    - Greeting messages
+    - Product descriptions
+    - Closing statements
+    - Transfer phrasing
+  </Step>
+  
+  <Step title="Analyze Satisfaction Scores">
+    Monitor trends in:
+    - Overall CSAT scores
+    - Response accuracy ratings
+    - Transfer satisfaction
+    - Resolution time
+  </Step>
+</Steps>
+
+## Advanced Customization
+
+### White-Label Configuration
+
+<Note>
+  **Agency Plan Feature**
+  
+  ```typescript
+  // From get-plans.ts
+  {
+    id: "agencia",
+    features: [
+      "White-label"  // Brand customization
+    ]
+  }
+  ```
+  
+  Available exclusively in Agency plan for resellers and multi-client management.
+</Note>
+
+#### Branding Options
+
+- **Custom Logo**: Upload your agency branding
+- **Color Scheme**: Match your brand colors
+- **Custom Domain**: Use your own domain (e.g., chat.youragency.com)
+- **Email Templates**: Branded notifications and reports
+- **Documentation**: Client-facing docs with your branding
+
+### Multi-Client Management
+
+<Info>
+  **Agency Dashboard**
+  
+  Manage up to 5 clients from centralized panel:
+  
+  - Individual AI training per client
+  - Separate WhatsApp numbers
+  - Client-specific analytics
+  - Bulk operations across accounts
+  - Consolidated billing
+</Info>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="AI Not Responding Accurately">
+    **Solutions:**
+    
+    1. Review and expand training data
+    2. Add more example conversations
+    3. Check for conflicting information
+    4. Verify business information is current
+    5. Lower confidence threshold for transfers
+  </Accordion>
+  
+  <Accordion title="Calendar Integration Issues">
+    **Diagnostics:**
+    
+    1. Verify calendar API connection
+    2. Check timezone settings match
+    3. Confirm availability rules are correct
+    4. Test booking flow manually
+    5. Review calendar permissions
+  </Accordion>
+  
+  <Accordion title="Transfer Not Working">
+    **Checks:**
+    
+    1. Verify transfer rules are configured
+    2. Test agent notification settings
+    3. Confirm agents have dashboard access
+    4. Check webhook endpoints (if configured)
+    5. Review transfer threshold settings
+  </Accordion>
+  
+  <Accordion title="CRM Sync Problems">
+    **Steps:**
+    
+    1. Verify CRM API credentials
+    2. Check field mapping configuration
+    3. Test contact creation manually
+    4. Review sync logs for errors
+    5. Confirm CRM API rate limits not exceeded
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Start Simple" icon="seedling">
+    - Begin with basic Q&A
+    - Add complexity gradually
+    - Test thoroughly at each stage
+    - Gather user feedback
+  </Card>
+  
+  <Card title="Keep Information Current" icon="rotate">
+    - Update pricing immediately
+    - Adjust hours for holidays
+    - Remove discontinued items
+    - Add new services promptly
+  </Card>
+  
+  <Card title="Monitor Performance" icon="chart-line">
+    - Daily metric review
+    - Weekly optimization sessions
+    - Monthly deep analysis
+    - Quarterly strategy review
+  </Card>
+  
+  <Card title="Iterate Based on Data" icon="microscope">
+    - Track what works
+    - Identify failure patterns
+    - Test improvements
+    - Measure results
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<Steps>
+  <Step title="Complete Initial Setup">
+    Follow [Quick Start Guide](/quickstart) for step-by-step instructions
+  </Step>
+  
+  <Step title="Monitor Dashboard">
+    Review [Dashboard Guide](/guides/dashboard) to track performance
+  </Step>
+  
+  <Step title="Optimize Based on Data">
+    Use analytics to improve AI responses and customer satisfaction
+  </Step>
+  
+  <Step title="Explore Advanced Features">
+    Consider [upgrading your plan](/guides/pricing-plans) for enhanced capabilities
+  </Step>
+</Steps>
+
+## Additional Resources
+
+- [Authentication Setup](/guides/authentication) - Secure access configuration
+- [API Documentation](/api-reference/introduction) - Developer integration guide
+- [Pricing Plans](/guides/pricing-plans) - Feature availability by tier
+- [Support Center](/soporte) - Get help from our team

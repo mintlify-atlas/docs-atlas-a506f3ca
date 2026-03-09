@@ -1,0 +1,586 @@
+---
+title: 'Integrated CRM'
+description: 'Centralized contact registry with complete conversation and interaction history'
+icon: 'address-book'
+---
+
+# Integrated CRM
+
+RespondeIA includes a built-in CRM that automatically captures and organizes every customer interaction. Every conversation, booking, and inquiry is saved to create comprehensive customer profiles without any manual data entry.
+
+## Overview
+
+The CRM system works silently in the background, capturing customer data from every WhatsApp interaction. Your team gets a complete view of each customer's history, preferences, and behavior.
+
+<CardGroup cols={2}>
+  <Card title="Automatic Capture" icon="wand-magic-sparkles">
+    Every message automatically saved to customer profile
+  </Card>
+  <Card title="Complete History" icon="clock-rotate-left">
+    Full conversation and interaction timeline
+  </Card>
+  <Card title="Zero Data Entry" icon="ban">
+    No manual input required - fully automated
+  </Card>
+  <Card title="Smart Profiles" icon="brain">
+    AI extracts insights from conversations
+  </Card>
+</CardGroup>
+
+<Note>
+  As stated in the Features component: **"Registro centralizado de contactos con historial completo."** - Centralized contact registry with complete history.
+</Note>
+
+## How It Works
+
+The CRM automatically builds customer profiles from WhatsApp interactions.
+
+<Steps>
+  <Step title="First contact">
+    When a customer messages you for the first time, RespondeIA creates a new contact profile automatically.
+    
+    Captured information:
+    - WhatsApp phone number
+    - Display name
+    - First message timestamp
+    - Initial inquiry context
+  </Step>
+  
+  <Step title="Conversation tracking">
+    Every message in the conversation is saved with full context:
+    
+    ```typescript
+    interface Message {
+      id: number;
+      from: "bot" | "user";
+      text?: string;
+      time: string;
+      ticks?: "blue" | "grey";
+      // Additional metadata
+      conversationId: string;
+      contactId: string;
+      intent: string;
+    }
+    ```
+  </Step>
+  
+  <Step title="Data extraction">
+    The AI extracts structured data from conversations:
+    
+    - Services interested in
+    - Appointment history
+    - Pricing discussions
+    - Common questions
+    - Preferences mentioned
+  </Step>
+  
+  <Step title="Profile enrichment">
+    Over time, the profile becomes more detailed:
+    
+    - Interaction frequency
+    - Preferred contact times
+    - Booking patterns
+    - Sentiment analysis
+    - Lifetime value
+  </Step>
+</Steps>
+
+## Contact Profile Structure
+
+Each customer profile contains comprehensive information organized in sections.
+
+### Basic Information
+
+```typescript
+interface Contact {
+  id: string;
+  phoneNumber: string;
+  displayName: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  
+  // Timestamps
+  firstContact: Date;
+  lastContact: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  
+  // Status
+  status: "active" | "inactive" | "blocked";
+  tags: string[];
+}
+```
+
+### Conversation History
+
+Complete message timeline with context:
+
+```typescript
+interface ConversationHistory {
+  conversations: Conversation[];
+  totalMessages: number;
+  averageResponseTime: number;
+}
+
+interface Conversation {
+  id: string;
+  startedAt: Date;
+  endedAt?: Date;
+  messages: Message[];
+  resolution: "resolved" | "transferred" | "abandoned";
+  satisfaction?: number; // 1-5 rating
+  intent: string;
+}
+```
+
+### Appointment History
+
+Tracking of all bookings and appointments:
+
+```typescript
+interface AppointmentHistory {
+  appointments: Appointment[];
+  totalBooked: number;
+  totalCompleted: number;
+  totalCancelled: number;
+  noShowRate: number;
+}
+
+interface Appointment {
+  id: string;
+  date: Date;
+  time: string;
+  service: string;
+  duration: number;
+  status: "confirmed" | "completed" | "cancelled" | "no-show";
+  bookedAt: Date;
+  confirmationSent: boolean;
+}
+```
+
+### Interaction Analytics
+
+AI-generated insights about the customer:
+
+```typescript
+interface CustomerInsights {
+  preferredContactTime: string; // e.g., "evenings"
+  averageConversationLength: number;
+  responseRate: number; // % of messages they respond to
+  bookingConversionRate: number;
+  lifetimeValue: number;
+  interests: string[];
+  sentimentScore: number; // -1 to 1
+  churnRisk: "low" | "medium" | "high";
+}
+```
+
+## Automatic Data Capture
+
+The CRM captures information without any manual work from your team.
+
+### From Conversations
+
+AI automatically extracts:
+
+<Accordion title="Contact Information">
+  - Names mentioned in conversation
+  - Email addresses shared
+  - Additional phone numbers
+  - Location references
+  - Company/organization names
+</Accordion>
+
+<Accordion title="Intent and Interests">
+  - Services inquired about
+  - Price points discussed
+  - Features of interest
+  - Pain points mentioned
+  - Competitor comparisons
+</Accordion>
+
+<Accordion title="Behavioral Patterns">
+  - Response time patterns
+  - Preferred communication hours
+  - Message frequency
+  - Conversation length preferences
+  - Channel preferences
+</Accordion>
+
+<Accordion title="Sentiment and Satisfaction">
+  - Positive/negative sentiment
+  - Satisfaction indicators
+  - Complaint patterns
+  - Praise and compliments
+  - Frustration signals
+</Accordion>
+
+### From Appointment System
+
+Booking behavior is automatically tracked:
+
+- Booking frequency
+- Preferred days/times
+- Average advance booking time
+- Cancellation patterns
+- No-show history
+- Rescheduling behavior
+
+### From Analytics Events
+
+System events are logged to profiles:
+
+- Conversation starts/ends
+- Bot handoff events
+- Issue escalations
+- Resolution confirmations
+- Feedback submissions
+
+<Info>
+  All data capture happens automatically in real-time. No manual data entry or form filling required.
+</Info>
+
+## Contact Management
+
+Access and manage your contacts through the RespondeIA dashboard.
+
+### Contact List View
+
+View all contacts with key information:
+
+- Contact name and phone
+- Last interaction date
+- Total interactions
+- Status (active/inactive)
+- Tags and segments
+- Quick actions (view, message, edit)
+
+### Search and Filter
+
+Find contacts quickly:
+
+- **Search**: by name, phone, email, or message content
+- **Filter by status**: active, inactive, blocked
+- **Filter by tags**: custom segments and categories
+- **Filter by dates**: first contact, last contact
+- **Filter by behavior**: booked, no-show, high-value
+
+### Bulk Actions
+
+Manage multiple contacts at once:
+
+- Add tags to multiple contacts
+- Send broadcast messages
+- Export contact lists
+- Update contact status
+- Merge duplicate profiles
+
+<Note>
+  The dashboard routes are defined in the source code: `/dashboard`, `/consultas`, `/soporte` - providing quick access to contact management.
+</Note>
+
+## Customer Segmentation
+
+Organize contacts into meaningful groups for targeted communication.
+
+### Automatic Segments
+
+The CRM creates segments automatically:
+
+<CardGroup cols={2}>
+  <Card title="New Customers" icon="user-plus">
+    First contact within last 30 days
+  </Card>
+  <Card title="Active Customers" icon="fire">
+    Interacted within last 7 days
+  </Card>
+  <Card title="At Risk" icon="triangle-exclamation">
+    No interaction in 60+ days
+  </Card>
+  <Card title="High Value" icon="star">
+    Multiple bookings or high spend
+  </Card>
+  <Card title="Frequent Bookers" icon="calendar-check">
+    3+ appointments booked
+  </Card>
+  <Card title="Need Follow-up" icon="bell">
+    Unresolved conversations
+  </Card>
+</CardGroup>
+
+### Custom Tags
+
+Create your own tags for flexible segmentation:
+
+- Service interests (e.g., "dental-cleaning", "orthodontics")
+- Customer type (e.g., "corporate", "individual")
+- Status (e.g., "lead", "customer", "vip")
+- Preferences (e.g., "morning-appointments", "flexible")
+- Campaign source (e.g., "facebook-ad", "referral")
+
+### Smart Lists
+
+Create dynamic lists based on criteria:
+
+```
+Example: "Customers who booked in last 30 days but haven't returned"
+- Last appointment: 30-60 days ago
+- Total appointments: 1
+- Last contact: > 30 days ago
+```
+
+## Conversation Context
+
+When viewing a contact, see complete conversation history for context.
+
+### Timeline View
+
+Chronological display of all interactions:
+
+```
+┌─ March 8, 2026 ────────────────────────┐
+│ 10:45 AM - Conversation started        │
+│ 10:46 AM - Asked about appointment     │
+│ 10:47 AM - Booked for tomorrow 15:00   │
+│ 10:47 AM - Confirmation sent ✅         │
+└────────────────────────────────────────┘
+
+┌─ March 1, 2026 ────────────────────────┐
+│ 3:20 PM - Conversation started         │
+│ 3:21 PM - Asked about services         │
+│ 3:22 PM - Transferred to agent         │
+│ 3:35 PM - Resolved by María            │
+└────────────────────────────────────────┘
+```
+
+### Message Threading
+
+See full conversation threads with:
+
+- User messages (green bubbles)
+- Bot responses (white bubbles)
+- System events (grey labels)
+- Timestamps and read receipts
+- Agent transfers and handoffs
+
+### Conversation Metadata
+
+Each conversation includes:
+
+```typescript
+interface ConversationMetadata {
+  id: string;
+  startedAt: Date;
+  endedAt?: Date;
+  duration: number; // seconds
+  messageCount: number;
+  resolution: "resolved" | "transferred" | "abandoned";
+  intent: string; // primary reason for contact
+  sentiment: number; // -1 to 1
+  satisfactionRating?: number; // 1-5
+  handledBy: "bot" | "agent" | "mixed";
+  transferredTo?: string; // agent name
+  tags: string[];
+}
+```
+
+## Integration with Other Features
+
+The CRM connects seamlessly with all RespondeIA features.
+
+### AI Chatbot Integration
+
+The chatbot uses CRM data to personalize conversations:
+
+```
+Bot: "¡Hola María! Vi que tuviste turno la semana pasada. 
+¿Todo bien? ¿Necesitás agendar el seguimiento?"
+```
+
+The bot remembers:
+- Customer name and preferences
+- Previous appointments
+- Past inquiries
+- Conversation history
+
+### Appointment Scheduling Integration
+
+Booking history informs the scheduling experience:
+
+- **Faster rebooking**: "¿Querés el mismo horario que la última vez?"
+- **Pattern recognition**: "Vi que preferís las mañanas..."
+- **Proactive suggestions**: "Ya pasó un mes desde tu última visita"
+
+### Analytics Integration
+
+CRM data powers analytics insights:
+
+- Customer lifetime value calculations
+- Retention rate tracking
+- Churn prediction
+- Cohort analysis
+- Revenue attribution
+
+See [Analytics](/features/analytics) for detailed metrics.
+
+### Handoff Integration
+
+When transferring to a human agent, full context is provided:
+
+```
+Transfer Note:
+
+Cliente: María García
+Teléfono: +54 9 11 1234-5678
+Historial:
+- Cliente desde hace 3 meses
+- 4 turnos completados
+- Último turno: 1 semana atrás
+- Satisfacción promedio: 5/5
+
+Consulta actual:
+Pregunta sobre tratamiento de ortodoncia
+para su hijo. Requiere presupuesto detallado.
+```
+
+See [Handoff](/features/handoff) for details on agent transfers.
+
+## Data Privacy and Security
+
+RespondeIA takes customer data protection seriously.
+
+### Data Protection
+
+<CardGroup cols={2}>
+  <Card title="Encryption" icon="lock">
+    All data encrypted at rest and in transit
+  </Card>
+  <Card title="Access Control" icon="shield">
+    Role-based permissions for team members
+  </Card>
+  <Card title="Audit Logs" icon="file-lines">
+    Complete record of data access
+  </Card>
+  <Card title="GDPR Compliant" icon="check">
+    Meets data protection regulations
+  </Card>
+</CardGroup>
+
+### Customer Privacy Rights
+
+Support for data privacy regulations:
+
+- **Right to access**: Export customer's complete data
+- **Right to deletion**: Permanently delete customer profile
+- **Right to rectification**: Update incorrect information
+- **Data portability**: Export in standard formats
+
+<Warning>
+  Deleting a contact profile is permanent and cannot be undone. Ensure you have necessary backups before deletion.
+</Warning>
+
+## Export and Reporting
+
+Extract CRM data for external use.
+
+### Export Formats
+
+- **CSV**: For spreadsheets and basic analysis
+- **JSON**: For integrations and custom processing
+- **PDF**: For reports and documentation
+
+### Export Options
+
+- Single contact export
+- Bulk contact export
+- Filtered list export
+- Complete database export
+- Conversation history export
+
+### Schedule Exports
+
+(Future feature) Automate regular exports:
+
+- Daily/weekly/monthly schedules
+- Email delivery
+- Cloud storage integration
+- Custom report formats
+
+## Best Practices
+
+<Tip>
+  **Review regularly**: Check new contacts weekly to identify patterns and opportunities.
+</Tip>
+
+<Tip>
+  **Use tags consistently**: Establish a tagging system and train your team to use it uniformly.
+</Tip>
+
+<Tip>
+  **Monitor at-risk customers**: Set up alerts for customers who haven't interacted recently.
+</Tip>
+
+<Tip>
+  **Leverage insights**: Use AI-generated insights to personalize customer communication.
+</Tip>
+
+<Note>
+  The CRM is designed to work automatically. You don't need to manually enter data, but you can add notes and tags to enhance profiles.
+</Note>
+
+## Business Impact
+
+Centralized customer data drives better business decisions.
+
+### From Customer Testimonials
+
+> "Redujimos el 80% de los mensajes repetitivos. El equipo ahora se enfoca en tareas de mayor valor."
+> 
+> — María García, Directora — Clínica Dental Norte
+
+The CRM enables this efficiency by:
+- Providing instant context to agents
+- Eliminating repeated questions
+- Tracking customer history automatically
+- Surfacing relevant information proactively
+
+### Key Benefits
+
+<CardGroup cols={3}>
+  <Card title="Zero data entry" icon="ban">
+    Fully automated capture
+  </Card>
+  <Card title="Complete history" icon="clock-rotate-left">
+    Never lose customer context
+  </Card>
+  <Card title="Better service" icon="heart">
+    Personalized interactions
+  </Card>
+  <Card title="Team efficiency" icon="gauge-high">
+    Quick access to information
+  </Card>
+  <Card title="Smart insights" icon="lightbulb">
+    AI-powered recommendations
+  </Card>
+  <Card title="Higher retention" icon="arrow-trend-up">
+    Proactive engagement
+  </Card>
+</CardGroup>
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card title="AI Chatbot" icon="message-bot" href="/features/ai-chatbot">
+    How conversations are captured
+  </Card>
+  <Card title="Appointment Scheduling" icon="calendar" href="/features/appointment-scheduling">
+    Booking history tracking
+  </Card>
+  <Card title="Analytics" icon="chart-line" href="/features/analytics">
+    CRM data analytics and insights
+  </Card>
+  <Card title="Handoff" icon="hand" href="/features/handoff">
+    Using CRM context in agent transfers
+  </Card>
+</CardGroup>

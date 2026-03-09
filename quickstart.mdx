@@ -1,80 +1,417 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: "Quick Start Guide"
+description: "Get your AI chatbot live on WhatsApp in under 10 minutes"
 ---
 
-## Get started in three steps
+## Get Up and Running in 10 Minutes
 
-Get your documentation site running locally and make your first customization.
+This guide will help you set up your AI-powered WhatsApp chatbot from scratch. By the end, you'll have an active bot responding to customer messages automatically.
 
-### Step 1: Set up your local environment
+<Info>
+**Average setup time**: 8 minutes from registration to active bot responding to messages.
+</Info>
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+## Prerequisites
 
-### Step 2: Deploy your changes
+Before you begin, make sure you have:
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+- A valid email address or Google account
+- A WhatsApp number for your business (existing or new)
+- Basic information about your business and services
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+You can use your existing WhatsApp number, but you'll need to migrate it to Meta's Business API. We'll guide you through this process.
 </Note>
+
+## Step 1: Create Your Account
+
+Start by creating your RespondeIA account. You have two options:
+
+<Tabs>
+  <Tab title="Email Registration">
+    ### Register with Email
+
+    Navigate to the [registration page](/register) and fill in your details:
+
+    ```tsx
+    // Registration form fields
+    const formFields = {
+      firstName: "Juan",
+      lastName: "Pérez",
+      email: "nombre@empresa.com",
+      password: "Min 8 characters"
+    };
+    ```
+
+    <Steps>
+      <Step title="Enter Your Information">
+        Provide your first name, last name, email, and create a password (minimum 8 characters).
+      </Step>
+      
+      <Step title="Accept Terms">
+        Review and accept the Terms of Service and Privacy Policy.
+      </Step>
+      
+      <Step title="Create Account">
+        Click **Crear cuenta** to complete registration.
+      </Step>
+    </Steps>
+  </Tab>
+  
+  <Tab title="Google Sign-Up">
+    ### Continue with Google
+
+    For faster registration, use your Google account:
+
+    <Steps>
+      <Step title="Click Google Button">
+        On the registration page, click **Registrarse con Google**.
+      </Step>
+      
+      <Step title="Select Account">
+        Choose which Google account to use for RespondeIA.
+      </Step>
+      
+      <Step title="Grant Permissions">
+        Allow RespondeIA to access your basic profile information.
+      </Step>
+    </Steps>
+
+    <Tip>
+    Google sign-up is faster and you won't need to remember another password.
+    </Tip>
+  </Tab>
+</Tabs>
+
+### Free Trial Details
+
+<CardGroup cols={3}>
+  <Card title="7 Days Free" icon="calendar">
+    Full access to all features
+  </Card>
+  <Card title="No Credit Card" icon="credit-card">
+    Start without payment info
+  </Card>
+  <Card title="Cancel Anytime" icon="xmark">
+    No commitment or penalties
+  </Card>
+</CardGroup>
+
+## Step 2: Log In to Your Dashboard
+
+After creating your account, log in to access your dashboard:
+
+```tsx
+// Login form implementation
+export const LoginForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { mutate, isPending } = useLogin();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    mutate({ email, password });
+  };
+};
+```
+
+<Steps>
+  <Step title="Navigate to Login">
+    Go to the [login page](/login).
+  </Step>
+  
+  <Step title="Enter Credentials">
+    Input your email and password, or click **Continuar con Google**.
+  </Step>
+  
+  <Step title="Optional: Remember Session">
+    Check **Recordar sesión** to stay logged in on this device.
+  </Step>
+  
+  <Step title="Access Dashboard">
+    Click **Ingresar** to access your dashboard.
+  </Step>
+</Steps>
+
+<Warning>
+If you forget your password, click **¿Olvidaste tu contraseña?** on the login page to reset it.
+</Warning>
+
+## Step 3: Connect WhatsApp
+
+Connect your WhatsApp number to start receiving and responding to messages.
+
+### Using Your Existing Number
+
+You can migrate your current WhatsApp number to the official Meta Business API:
+
+<Steps>
+  <Step title="Initiate Migration">
+    In your dashboard, click **Connect WhatsApp** and select **Use Existing Number**.
+  </Step>
+  
+  <Step title="Verify Ownership">
+    Meta will send a verification code to your number. Enter the code to confirm ownership.
+  </Step>
+  
+  <Step title="Complete Migration">
+    Follow the guided process. Migration typically completes in under 10 minutes.
+  </Step>
+  
+  <Step title="Activate Business API">
+    Once verified, your number will be activated on Meta's Business API platform.
+  </Step>
+</Steps>
+
+<Info>
+**Migration process**: The guided migration process is designed to be simple and takes less than 10 minutes on average.
+</Info>
+
+### Getting a New Number
+
+If you prefer to start with a new WhatsApp number:
+
+<Steps>
+  <Step title="Select New Number">
+    In the WhatsApp connection flow, choose **Get New Number**.
+  </Step>
+  
+  <Step title="Choose Number">
+    Select an available number from the list or request a specific one.
+  </Step>
+  
+  <Step title="Verify and Activate">
+    Complete verification and activate your new business number.
+  </Step>
+</Steps>
+
+## Step 4: Configure Your AI Assistant
+
+Train your AI with business information so it can respond accurately to customers.
+
+### Business Information
+
+Provide key details about your business:
+
+<CodeGroup>
+```json Business Profile
+{
+  "businessName": "Tu Empresa",
+  "industry": "Servicios profesionales",
+  "description": "Breve descripción de tu negocio",
+  "hours": "Lun-Vie 9:00-18:00",
+  "location": "Buenos Aires, Argentina"
+}
+```
+
+```json Products/Services
+{
+  "services": [
+    {
+      "name": "Consultoría",
+      "description": "Asesoramiento profesional",
+      "price": "$50/hora"
+    },
+    {
+      "name": "Capacitación",
+      "description": "Cursos y talleres",
+      "price": "$200/sesión"
+    }
+  ]
+}
+```
+</CodeGroup>
+
+### Training the AI
+
+<Steps>
+  <Step title="Add Business Context">
+    Describe your business, what you offer, and who you serve.
+  </Step>
+  
+  <Step title="Define FAQs">
+    Add frequently asked questions and their answers. The AI will learn from these.
+  </Step>
+  
+  <Step title="Set Tone and Style">
+    Choose how the AI should communicate: formal, casual, friendly, etc.
+  </Step>
+  
+  <Step title="Configure Responses">
+    Set up automatic responses for common scenarios like greetings and business hours.
+  </Step>
+</Steps>
+
+<Tip>
+The more information you provide, the better your AI will respond. You can always update and refine the training later.
+</Tip>
+
+## Step 5: Set Up Appointment Scheduling (Optional)
+
+If your business takes appointments, configure the scheduling feature:
+
+<Steps>
+  <Step title="Enable Scheduling">
+    Navigate to **Settings** > **Appointments** and toggle on scheduling.
+  </Step>
+  
+  <Step title="Set Availability">
+    Define your available time slots for appointments.
+  </Step>
+  
+  <Step title="Configure Duration">
+    Set default appointment duration (e.g., 30 minutes, 1 hour).
+  </Step>
+  
+  <Step title="Test Booking Flow">
+    Send a test message to your bot to verify the booking process works correctly.
+  </Step>
+</Steps>
+
+### Example Booking Conversation
+
+Here's how the AI handles appointment scheduling:
+
+```tsx
+// Example conversation flow
+const bookingFlow = [
+  {
+    from: "bot",
+    text: "¡Hola! 👋 ¿En qué puedo ayudarte?"
+  },
+  {
+    from: "user",
+    text: "Quiero agendar un turno para mañana."
+  },
+  {
+    from: "bot",
+    slots: ["🕒 15:00 hs", "🕔 17:00 hs"],
+    prefix: "¡Perfecto! 🗓️ Tengo disponible:",
+    suffix: "¿Cuál te queda mejor?"
+  },
+  {
+    from: "user",
+    text: "Las 15:00 me viene perfecto 👍"
+  },
+  {
+    from: "bot",
+    text: "✅ ¡Listo! Turno confirmado para mañana a las 15:00 hs."
+  }
+];
+```
+
+The bot automatically:
+- Shows available time slots
+- Confirms selected times
+- Sends reminders before appointments
+- Handles cancellations and rescheduling
+
+## Step 6: Go Live
+
+Once everything is configured, activate your bot:
+
+<Steps>
+  <Step title="Review Configuration">
+    Double-check your business information, AI training, and settings.
+  </Step>
+  
+  <Step title="Activate Bot">
+    Toggle the **Active** switch in your dashboard to enable the bot.
+  </Step>
+  
+  <Step title="Send Test Messages">
+    Use your personal WhatsApp to send test messages and verify responses.
+  </Step>
+  
+  <Step title="Monitor Performance">
+    Watch the analytics dashboard to see incoming messages and bot responses.
+  </Step>
+</Steps>
+
+<Info>
+**You're live!** Your AI assistant is now responding to customer messages on WhatsApp automatically.
+</Info>
+
+## Monitoring Your Bot
+
+### Real-Time Dashboard
+
+Access your dashboard to monitor:
+
+<CardGroup cols={2}>
+  <Card title="Active Conversations" icon="comments">
+    See all ongoing customer conversations
+  </Card>
+  <Card title="Response Time" icon="clock">
+    Track average response latency (target: under 2s)
+  </Card>
+  <Card title="Resolution Rate" icon="chart-line">
+    Percentage of queries resolved by AI
+  </Card>
+  <Card title="Customer Satisfaction" icon="star">
+    Satisfaction ratings from customers
+  </Card>
+</CardGroup>
+
+### Key Metrics to Watch
+
+```tsx
+// Platform performance stats
+const platformStats = {
+  averageResponse: "1.4s",
+  satisfactionRate: "98%",
+  activeBusinesses: "2400+",
+  setupTime: "8 min"
+};
+```
+
+## Next Steps
+
+### Optimize Your Bot
+
+Now that your bot is live, continue improving it:
+
+<CardGroup cols={2}>
+  <Card title="Detailed Setup Guide" href="/setup" icon="gear">
+    Learn advanced configuration options
+  </Card>
+  <Card title="AI Chatbot Features" href="/features/ai-chatbot" icon="robot">
+    Understand how to train your AI better
+  </Card>
+  <Card title="Analytics Dashboard" href="/features/analytics" icon="chart-bar">
+    Deep dive into performance metrics
+  </Card>
+  <Card title="CRM Integration" href="/features/crm-integration" icon="database">
+    Manage customer data effectively
+  </Card>
+</CardGroup>
+
+### Common Questions
+
+<AccordionGroup>
+  <Accordion title="How do I improve AI responses?">
+    Add more training data in **Settings** > **AI Training**. The more examples and FAQs you provide, the better the AI understands your business context.
+  </Accordion>
+  
+  <Accordion title="Can I pause the bot temporarily?">
+    Yes, toggle the **Active** switch in your dashboard to pause/resume the bot at any time.
+  </Accordion>
+  
+  <Accordion title="What happens when the AI can't answer?">
+    Configure handoff rules in **Settings** > **Handoff**. The bot will transfer complex queries to human agents with full conversation context.
+  </Accordion>
+  
+  <Accordion title="How do I upgrade my plan?">
+    Go to **Settings** > **Billing** to view plans and upgrade. Changes take effect immediately.
+  </Accordion>
+</AccordionGroup>
+
+## Getting Help
+
+<Card title="Need Assistance?" icon="life-ring">
+  Contact our support team at **soporte@respondeia.com** or visit the [support section](/soporte) in your dashboard.
+</Card>
+
+<Tip>
+**Pro tip**: Join our community to share best practices with other RespondeIA users and get tips for optimizing your bot's performance.
+</Tip>

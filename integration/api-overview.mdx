@@ -1,0 +1,1084 @@
+---
+title: 'API Overview'
+description: 'Complete reference for RespondeIA REST API - integrate with any platform'
+icon: 'code'
+---
+
+## Introduction
+
+The RespondeIA API allows you to integrate AI-powered customer service automation into any platform, application, or workflow. Built on REST principles, it uses standard HTTP methods and returns JSON-formatted responses.
+
+## Base URL
+
+All API requests are made to:
+
+```text
+https://api.respondeia.com/v1
+```
+
+<Note>
+Always use HTTPS. HTTP requests will be rejected.
+</Note>
+
+## Authentication
+
+RespondeIA uses Bearer token authentication. Include your API token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_API_TOKEN
+```
+
+### Obtaining API Tokens
+
+Based on the authentication pattern in `/home/daytona/workspace/source/modules/auth/services/auth.service.ts:1-18`:
+
+<CodeGroup>
+```typescript TypeScript
+interface LoginResponse {
+  user: {
+    user: any;
+    token: string;
+  };
+}
+
+async function login(email: string, password: string): Promise<string> {
+  const response = await fetch('https://api.respondeia.com/v1/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email,
+      password
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Credenciales incorrectas');
+  }
+
+  const data: LoginResponse = await response.json();
+  return data.user.token;
+}
+```
+
+```bash cURL
+curl -X POST https://api.respondeia.com/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "your@email.com",
+    "password": "your-password"
+  }'
+```
+
+```python Python
+import requests
+
+def login(email: str, password: str) -> str:
+    response = requests.post(
+        'https://api.respondeia.com/v1/auth/login',
+        json={
+            'email': email,
+            'password': password
+        }
+    )
+    
+    if response.status_code != 200:
+        raise Exception('Credenciales incorrectas')
+    
+    data = response.json()
+    return data['user']['token']
+
+token = login('your@email.com', 'your-password')
+```
+</CodeGroup>
+
+### Creating API Keys
+
+For programmatic access, generate long-lived API keys:
+
+```typescript Create API Key
+async function createApiKey(name: string, permissions: string[]) {
+  const response = await fetch('https://api.respondeia.com/v1/auth/api-keys', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name,
+      permissions
+    })
+  });
+
+  const { apiKey, createdAt } = await response.json();
+  return apiKey;
+}
+
+// Example: Create key with full access
+const apiKey = await createApiKey('Production API', [
+  'messages:read',
+  'messages:write',
+  'customers:read',
+  'customers:write',
+  'analytics:read',
+  'webhooks:manage'
+]);
+```
+
+<Warning>
+Store API keys securely. They provide full access to your account. Never commit them to version control.
+</Warning>
+
+## Rate Limiting
+
+API requests are rate-limited based on your plan:
+
+| Plan | Rate Limit | Burst Limit |
+|------|-----------|-------------|
+| Básico | 100 req/min | 150 req/min |
+| Pro | 500 req/min | 750 req/min |
+| Agencia | 2000 req/min | 3000 req/min |
+| Enterprise | Custom | Custom |
+
+### Rate Limit Headers
+
+Every response includes rate limit information:
+
+```http
+X-RateLimit-Limit: 500
+X-RateLimit-Remaining: 487
+X-RateLimit-Reset: 1678886400
+```
+
+### Handling Rate Limits
+
+```typescript Rate Limit Handler
+interface RateLimitError {
+  error: 'rate_limit_exceeded';
+  retryAfter: number;
+}
+
+async function apiRequestWithRetry(url: string, options: RequestInit) {
+  const response = await fetch(url, options);
+  
+  if (response.status === 429) {
+    const retryAfter = parseInt(response.headers.get('Retry-After') || '60');
+    
+    console.log(`Rate limited. Retrying after ${retryAfter}s`);
+    await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+    
+    return apiRequestWithRetry(url, options);
+  }
+  
+  return response;
+}
+```
+
+## Error Handling
+
+The API uses standard HTTP status codes and returns structured error responses:
+
+### Status Codes
+
+| Code | Description |
+|------|-------------|
+| 200 | Success |
+| 201 | Created |
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid or missing token |
+| 403 | Forbidden - Insufficient permissions |
+| 404 | Not Found - Resource doesn't exist |
+| 429 | Too Many Requests - Rate limit exceeded |
+| 500 | Internal Server Error |
+| 503 | Service Unavailable - Temporary outage |
+
+### Error Response Format
+
+```json
+{
+  "error": {
+    "code": "invalid_parameter",
+    "message": "The 'customer_id' parameter is required",
+    "field": "customer_id",
+    "documentation_url": "https://docs.respondeia.com/api/errors#invalid_parameter"
+  }
+}
+```
+
+### Error Handling Example
+
+```typescript
+async function handleApiRequest<T>(url: string, options: RequestInit): Promise<T> {
+  const response = await fetch(url, options);
+  
+  if (!response.ok) {
+    const error = await response.json();
+    
+    switch (response.status) {
+      case 400:
+        throw new Error(`Bad Request: ${error.error.message}`);
+      case 401:
+        throw new Error('Unauthorized: Invalid API token');
+      case 403:
+        throw new Error('Forbidden: Insufficient permissions');
+      case 404:
+        throw new Error('Not Found: Resource does not exist');
+      case 429:
+        throw new Error('Rate limit exceeded');
+      case 500:
+        throw new Error('Internal server error');
+      default:
+        throw new Error(`API Error: ${error.error.message}`);
+    }
+  }
+  
+  return response.json();
+}
+```
+
+## Core Endpoints
+
+### Messages
+
+Send and receive messages across channels (WhatsApp, etc.):
+
+```typescript
+// Send a message
+POST /v1/messages/send
+
+// Get message history
+GET /v1/messages?customer_id={id}&limit=50
+
+// Get single message
+GET /v1/messages/{message_id}
+
+// Mark message as read
+POST /v1/messages/{message_id}/read
+```
+
+### Customers
+
+Manage customer profiles and conversation history:
+
+```typescript
+// List customers
+GET /v1/customers?page=1&limit=100
+
+// Get customer details
+GET /v1/customers/{customer_id}
+
+// Update customer
+PATCH /v1/customers/{customer_id}
+
+// Get customer conversations
+GET /v1/customers/{customer_id}/conversations
+```
+
+### AI Training
+
+Train and configure your AI assistant:
+
+```typescript
+// Upload training data
+POST /v1/ai/training/upload
+
+// Get training status
+GET /v1/ai/training/status
+
+// Update AI settings
+PATCH /v1/ai/settings
+
+// Test AI response
+POST /v1/ai/test
+```
+
+### Payments
+
+Manage payments and transactions:
+
+```typescript
+// Create payment
+POST /v1/payments/create
+
+// Get payment status
+GET /v1/payments/{payment_id}
+
+// Refund payment
+POST /v1/payments/{payment_id}/refund
+
+// List transactions
+GET /v1/payments?start_date={date}&end_date={date}
+```
+
+### Analytics
+
+Retrieve performance metrics:
+
+```typescript
+// Get dashboard metrics
+GET /v1/analytics/dashboard
+
+// Get conversation metrics
+GET /v1/analytics/conversations?period=7d
+
+// Get AI performance
+GET /v1/analytics/ai-performance
+
+// Export data
+POST /v1/analytics/export
+```
+
+### Webhooks
+
+Manage webhook subscriptions:
+
+```typescript
+// Create webhook
+POST /v1/webhooks
+
+// List webhooks
+GET /v1/webhooks
+
+// Delete webhook
+DELETE /v1/webhooks/{webhook_id}
+
+// Test webhook
+POST /v1/webhooks/{webhook_id}/test
+```
+
+## Detailed Examples
+
+### Send a WhatsApp Message
+
+<CodeGroup>
+```typescript TypeScript
+interface SendMessageParams {
+  channel: 'whatsapp' | 'telegram' | 'webchat';
+  to: string;
+  content: string;
+  type: 'text' | 'image' | 'document' | 'location';
+  mediaUrl?: string;
+}
+
+async function sendMessage(params: SendMessageParams) {
+  const response = await fetch('https://api.respondeia.com/v1/messages/send', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(params)
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to send message');
+  }
+
+  const { messageId, status, sentAt } = await response.json();
+  return { messageId, status, sentAt };
+}
+
+// Example: Send text message
+const result = await sendMessage({
+  channel: 'whatsapp',
+  to: 'wa:5491123456789',
+  content: 'Hola! Cómo puedo ayudarte hoy?',
+  type: 'text'
+});
+
+console.log(`Message sent: ${result.messageId}`);
+```
+
+```python Python
+import requests
+from typing import Optional
+
+def send_message(
+    channel: str,
+    to: str,
+    content: str,
+    message_type: str = 'text',
+    media_url: Optional[str] = None
+) -> dict:
+    response = requests.post(
+        'https://api.respondeia.com/v1/messages/send',
+        headers={
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'channel': channel,
+            'to': to,
+            'content': content,
+            'type': message_type,
+            'media_url': media_url
+        }
+    )
+    
+    response.raise_for_status()
+    return response.json()
+
+# Example usage
+result = send_message(
+    channel='whatsapp',
+    to='wa:5491123456789',
+    content='Hola! Cómo puedo ayudarte hoy?'
+)
+
+print(f"Message sent: {result['message_id']}")
+```
+
+```bash cURL
+curl -X POST https://api.respondeia.com/v1/messages/send \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "channel": "whatsapp",
+    "to": "wa:5491123456789",
+    "content": "Hola! Cómo puedo ayudarte hoy?",
+    "type": "text"
+  }'
+```
+</CodeGroup>
+
+### Retrieve Conversation History
+
+```typescript Conversation History
+interface Message {
+  id: string;
+  customerId: string;
+  content: string;
+  type: 'text' | 'image' | 'document';
+  direction: 'inbound' | 'outbound';
+  timestamp: number;
+  status: 'sent' | 'delivered' | 'read' | 'failed';
+  aiGenerated: boolean;
+}
+
+interface ConversationResponse {
+  messages: Message[];
+  totalCount: number;
+  hasMore: boolean;
+  nextCursor?: string;
+}
+
+async function getConversation(
+  customerId: string,
+  limit: number = 50,
+  cursor?: string
+): Promise<ConversationResponse> {
+  const params = new URLSearchParams({
+    customer_id: customerId,
+    limit: limit.toString(),
+    ...(cursor && { cursor })
+  });
+
+  const response = await fetch(
+    `https://api.respondeia.com/v1/messages?${params}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`
+      }
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch conversation');
+  }
+
+  return response.json();
+}
+
+// Example: Get last 50 messages
+const conversation = await getConversation('wa:5491123456789', 50);
+
+conversation.messages.forEach(msg => {
+  const source = msg.aiGenerated ? '[AI]' : '[Human]';
+  const direction = msg.direction === 'inbound' ? '←' : '→';
+  console.log(`${source} ${direction} ${msg.content}`);
+});
+
+if (conversation.hasMore) {
+  // Fetch next page
+  const nextPage = await getConversation(
+    'wa:5491123456789',
+    50,
+    conversation.nextCursor
+  );
+}
+```
+
+### Create and Track Payment
+
+```typescript Payment Flow
+interface Payment {
+  id: string;
+  customerId: string;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'approved' | 'rejected' | 'refunded';
+  paymentLink: string;
+  createdAt: number;
+  paidAt?: number;
+}
+
+async function createPayment(
+  customerId: string,
+  amount: number,
+  description: string
+): Promise<Payment> {
+  const response = await fetch('https://api.respondeia.com/v1/payments/create', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      provider: 'mercadopago',
+      customer_id: customerId,
+      amount: amount,
+      currency: 'ARS',
+      description: description,
+      notification_url: `https://api.respondeia.com/webhooks/mercadopago/${accountId}`,
+      auto_return: 'approved'
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create payment');
+  }
+
+  return response.json();
+}
+
+async function pollPaymentStatus(
+  paymentId: string,
+  maxAttempts: number = 60
+): Promise<Payment> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const response = await fetch(
+      `https://api.respondeia.com/v1/payments/${paymentId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`
+        }
+      }
+    );
+
+    const payment: Payment = await response.json();
+
+    if (payment.status === 'approved') {
+      return payment;
+    }
+
+    if (payment.status === 'rejected') {
+      throw new Error('Payment rejected');
+    }
+
+    // Wait 5 seconds before next check
+    await new Promise(resolve => setTimeout(resolve, 5000));
+  }
+
+  throw new Error('Payment timeout');
+}
+
+// Example usage
+const payment = await createPayment(
+  'wa:5491123456789',
+  5900, // $59.00
+  'Plan Pro - Mensual'
+);
+
+// Send payment link via WhatsApp
+await sendMessage({
+  channel: 'whatsapp',
+  to: 'wa:5491123456789',
+  content: `Tu enlace de pago: ${payment.paymentLink}`,
+  type: 'text'
+});
+
+// Poll for payment completion
+try {
+  const completedPayment = await pollPaymentStatus(payment.id);
+  console.log(`Payment approved at ${new Date(completedPayment.paidAt!)}`);
+  
+  // Send confirmation
+  await sendMessage({
+    channel: 'whatsapp',
+    to: 'wa:5491123456789',
+    content: 'Pago confirmado! Gracias por tu compra.',
+    type: 'text'
+  });
+} catch (error) {
+  console.error('Payment failed:', error);
+}
+```
+
+### Upload AI Training Data
+
+```typescript AI Training
+interface TrainingData {
+  type: 'faq' | 'product_catalog' | 'business_info' | 'conversation_examples';
+  data: any;
+}
+
+async function uploadTrainingData(training: TrainingData) {
+  const response = await fetch('https://api.respondeia.com/v1/ai/training/upload', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(training)
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to upload training data');
+  }
+
+  const { jobId, status } = await response.json();
+  return { jobId, status };
+}
+
+// Example: Upload FAQ data
+const faqData = {
+  type: 'faq' as const,
+  data: {
+    faqs: [
+      {
+        question: "Cuáles son los horarios de atención?",
+        answer: "Nuestro AI está disponible 24/7. Atención humana de 9 AM a 6 PM de lunes a viernes."
+      },
+      {
+        question: "Cómo cancelo mi suscripción?",
+        answer: "Puedes cancelar en cualquier momento desde tu panel de control en Configuración → Suscripción."
+      },
+      {
+        question: "Ofrecen prueba gratuita?",
+        answer: "Sí! Ofrecemos 7 días gratis sin necesidad de tarjeta de crédito."
+      }
+    ]
+  }
+};
+
+const job = await uploadTrainingData(faqData);
+console.log(`Training job started: ${job.jobId}`);
+
+// Check training status
+async function checkTrainingStatus(jobId: string) {
+  const response = await fetch(
+    `https://api.respondeia.com/v1/ai/training/status?job_id=${jobId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`
+      }
+    }
+  );
+
+  const { status, progress, completedAt } = await response.json();
+  return { status, progress, completedAt };
+}
+
+let trainingComplete = false;
+while (!trainingComplete) {
+  const status = await checkTrainingStatus(job.jobId);
+  
+  if (status.status === 'completed') {
+    console.log('AI training complete!');
+    trainingComplete = true;
+  } else if (status.status === 'failed') {
+    throw new Error('Training failed');
+  } else {
+    console.log(`Training progress: ${status.progress}%`);
+    await new Promise(resolve => setTimeout(resolve, 10000));
+  }
+}
+```
+
+## Webhooks
+
+Webhooks allow RespondeIA to notify your application of events in real-time.
+
+### Available Events
+
+```typescript
+type WebhookEvent =
+  | 'message.received'
+  | 'message.sent'
+  | 'message.delivered'
+  | 'message.read'
+  | 'message.failed'
+  | 'payment.created'
+  | 'payment.approved'
+  | 'payment.rejected'
+  | 'payment.refunded'
+  | 'customer.created'
+  | 'customer.updated'
+  | 'conversation.escalated'
+  | 'ai.training.completed';
+```
+
+### Creating a Webhook
+
+```typescript
+interface WebhookConfig {
+  url: string;
+  events: WebhookEvent[];
+  secret?: string;
+}
+
+async function createWebhook(config: WebhookConfig) {
+  const response = await fetch('https://api.respondeia.com/v1/webhooks', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(config)
+  });
+
+  const { webhookId, secret } = await response.json();
+  return { webhookId, secret };
+}
+
+// Example: Create webhook for messages and payments
+const webhook = await createWebhook({
+  url: 'https://yourdomain.com/webhooks/respondeia',
+  events: [
+    'message.received',
+    'message.sent',
+    'payment.approved',
+    'payment.rejected'
+  ]
+});
+
+console.log(`Webhook created: ${webhook.webhookId}`);
+console.log(`Secret: ${webhook.secret}`);
+```
+
+### Webhook Payload
+
+```typescript
+interface WebhookPayload {
+  event: WebhookEvent;
+  timestamp: number;
+  data: any;
+  signature: string;
+}
+
+// Example payload for message.received
+{
+  "event": "message.received",
+  "timestamp": 1678886400,
+  "data": {
+    "message_id": "msg_abc123",
+    "customer_id": "wa:5491123456789",
+    "content": "Hola, quiero información sobre precios",
+    "channel": "whatsapp",
+    "received_at": 1678886400
+  },
+  "signature": "sha256=abc123..."
+}
+```
+
+### Verifying Webhook Signatures
+
+```typescript
+import crypto from 'crypto';
+
+function verifyWebhookSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+
+  return signature === `sha256=${expectedSignature}`;
+}
+
+// Express.js example
+app.post('/webhooks/respondeia', (req, res) => {
+  const signature = req.headers['x-respondeia-signature'] as string;
+  const payload = JSON.stringify(req.body);
+
+  if (!verifyWebhookSignature(payload, signature, webhookSecret)) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+
+  const event: WebhookPayload = req.body;
+
+  switch (event.event) {
+    case 'message.received':
+      console.log('New message:', event.data.content);
+      break;
+    case 'payment.approved':
+      console.log('Payment approved:', event.data.payment_id);
+      break;
+    // Handle other events
+  }
+
+  res.status(200).json({ received: true });
+});
+```
+
+## Pagination
+
+Endpoints that return lists use cursor-based pagination:
+
+```typescript
+interface PaginatedResponse<T> {
+  data: T[];
+  hasMore: boolean;
+  nextCursor?: string;
+}
+
+async function fetchAllPages<T>(
+  endpoint: string,
+  limit: number = 100
+): Promise<T[]> {
+  const allResults: T[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      ...(cursor && { cursor })
+    });
+
+    const response = await fetch(`${endpoint}?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`
+      }
+    });
+
+    const page: PaginatedResponse<T> = await response.json();
+    allResults.push(...page.data);
+    cursor = page.nextCursor;
+  } while (cursor);
+
+  return allResults;
+}
+
+// Example: Fetch all customers
+const allCustomers = await fetchAllPages('/v1/customers', 100);
+console.log(`Total customers: ${allCustomers.length}`);
+```
+
+## SDKs and Libraries
+
+Official SDKs are available for popular languages:
+
+<CardGroup cols={3}>
+  <Card title="TypeScript/Node.js" icon="node-js">
+    ```bash
+    npm install @respondeia/sdk
+    ```
+  </Card>
+  <Card title="Python" icon="python">
+    ```bash
+    pip install respondeia
+    ```
+  </Card>
+  <Card title="PHP" icon="php">
+    ```bash
+    composer require respondeia/sdk
+    ```
+  </Card>
+</CardGroup>
+
+### Using the TypeScript SDK
+
+```typescript
+import { RespondeIA } from '@respondeia/sdk';
+
+const client = new RespondeIA({
+  apiKey: process.env.RESPONDEIA_API_KEY
+});
+
+// Send message
+await client.messages.send({
+  channel: 'whatsapp',
+  to: 'wa:5491123456789',
+  content: 'Hola!'
+});
+
+// Create payment
+const payment = await client.payments.create({
+  customerId: 'wa:5491123456789',
+  amount: 5900,
+  description: 'Plan Pro'
+});
+
+// Get analytics
+const metrics = await client.analytics.getDashboard({
+  period: '7d'
+});
+```
+
+## Best Practices
+
+### 1. Use Webhooks Instead of Polling
+
+<CardGroup cols={2}>
+  <Card title="Good" icon="check" color="green">
+    Use webhooks to receive real-time notifications
+  </Card>
+  <Card title="Avoid" icon="xmark" color="red">
+    Polling endpoints repeatedly wastes requests
+  </Card>
+</CardGroup>
+
+### 2. Implement Exponential Backoff
+
+```typescript
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  maxRetries: number = 3
+) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(url, options);
+      
+      if (response.ok) {
+        return response;
+      }
+      
+      // Don't retry client errors (4xx)
+      if (response.status >= 400 && response.status < 500) {
+        throw new Error(`Client error: ${response.status}`);
+      }
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      
+      // Exponential backoff: 1s, 2s, 4s
+      const delay = Math.pow(2, i) * 1000;
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+```
+
+### 3. Cache Responses When Possible
+
+```typescript
+const cache = new Map<string, { data: any; expiresAt: number }>();
+
+async function cachedFetch(url: string, ttl: number = 60000) {
+  const now = Date.now();
+  const cached = cache.get(url);
+  
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
+  
+  const response = await fetch(url, {
+    headers: { 'Authorization': `Bearer ${apiKey}` }
+  });
+  
+  const data = await response.json();
+  cache.set(url, { data, expiresAt: now + ttl });
+  
+  return data;
+}
+```
+
+### 4. Handle Idempotency
+
+Use idempotency keys for critical operations:
+
+```typescript
+import { v4 as uuidv4 } from 'uuid';
+
+async function createPaymentIdempotent(
+  customerId: string,
+  amount: number,
+  description: string
+) {
+  const idempotencyKey = uuidv4();
+  
+  const response = await fetch('https://api.respondeia.com/v1/payments/create', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': idempotencyKey
+    },
+    body: JSON.stringify({
+      customer_id: customerId,
+      amount,
+      description
+    })
+  });
+  
+  return response.json();
+}
+```
+
+## Testing
+
+### Test Mode
+
+Use test API keys for development:
+
+```typescript
+const testApiKey = 'test_sk_abc123...';
+
+// Test keys are prefixed with 'test_'
+// They don't affect production data
+```
+
+### Mock Server
+
+RespondeIA provides a mock server for testing:
+
+```bash
+# Install mock server
+npm install -g @respondeia/mock-server
+
+# Run locally
+respondeia-mock --port 3000
+
+# Point your code to mock server
+const baseUrl = 'http://localhost:3000/v1';
+```
+
+## Support
+
+If you encounter issues with the API:
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="/">
+    Browse complete documentation
+  </Card>
+  <Card title="Support" icon="headset">
+    Email: api-support@respondeia.com
+  </Card>
+  <Card title="Status Page" icon="signal">
+    Check API status: status.respondeia.com
+  </Card>
+  <Card title="GitHub" icon="github">
+    Report issues and request features
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="WhatsApp Integration" icon="whatsapp" href="/integration/whatsapp">
+    Set up WhatsApp Business API
+  </Card>
+  <Card title="MercadoPago Integration" icon="credit-card" href="/integration/mercadopago">
+    Enable payment processing
+  </Card>
+  <Card title="Webhooks Guide" icon="webhook">
+    Configure real-time notifications
+  </Card>
+  <Card title="AI Training" icon="brain" href="/guides/customization">
+    Train your AI assistant
+  </Card>
+</CardGroup>

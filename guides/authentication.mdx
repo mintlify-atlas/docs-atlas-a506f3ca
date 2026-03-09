@@ -1,0 +1,272 @@
+---
+title: 'Authentication Guide'
+description: 'Complete guide to login, registration, and account management in RespondeIA'
+icon: 'lock'
+---
+
+## Overview
+
+RespondeIA provides a secure authentication system for accessing your WhatsApp AI customer service platform. This guide covers everything you need to know about logging in, creating an account, and managing your authentication.
+
+## Creating Your Account
+
+<Steps>
+  <Step title="Navigate to Registration">
+    Go to `/register` or click "Registrate gratis" from the login page.
+  </Step>
+  
+  <Step title="Choose Registration Method">
+    You have two options to create your account:
+    
+    **Option 1: Google Sign-Up (Recommended)**
+    
+    Click the "Registrarse con Google" button for instant account creation using your Google credentials.
+    
+    **Option 2: Email Registration**
+    
+    Fill out the registration form with:
+    - **First Name** (Nombre)
+    - **Last Name** (Apellido) 
+    - **Email Address** (Correo electrónico)
+    - **Password** (Contraseña - minimum 8 characters)
+    
+    ```tsx
+    // Example registration form fields from source
+    <Input id="first-name" placeholder="Juan" />
+    <Input id="last-name" placeholder="Pérez" />
+    <Input id="email" type="email" placeholder="nombre@empresa.com" />
+    <Input id="password" type="password" placeholder="Mínimo 8 caracteres" />
+    ```
+  </Step>
+  
+  <Step title="Accept Terms and Conditions">
+    Review and accept:
+    - [Terms of Service](/terms)
+    - [Privacy Policy](/privacy)
+    
+    <Warning>
+      You must accept the terms and conditions to create an account. This ensures compliance with data protection regulations.
+    </Warning>
+  </Step>
+  
+  <Step title="Complete Registration">
+    Click **"Crear cuenta"** to finalize your registration. You'll be automatically logged in and redirected to your dashboard.
+  </Step>
+</Steps>
+
+## Logging In
+
+<Tabs>
+  <Tab title="Email Login">
+    ### Standard Login Process
+    
+    <Steps>
+      <Step title="Access Login Page">
+        Navigate to `/login` from the RespondeIA homepage.
+      </Step>
+      
+      <Step title="Enter Credentials">
+        ```tsx
+        // Login form implementation from LoginForm.tsx
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        
+        const handleSubmit = (e: React.FormEvent) => {
+          e.preventDefault();
+          mutate({ email, password });
+        };
+        ```
+        
+        Provide your:
+        - **Email address** (nombre@empresa.com)
+        - **Password** (your secure password)
+      </Step>
+      
+      <Step title="Optional Settings">
+        - **Remember session**: Check this box to stay logged in across browser sessions
+        - **Show/Hide Password**: Toggle password visibility using the eye icon
+      </Step>
+      
+      <Step title="Submit">
+        Click **"Ingresar"** to access your dashboard.
+      </Step>
+    </Steps>
+    
+    <Info>
+      The login process uses secure API endpoints:
+      ```typescript
+      // From auth.service.ts
+      login: async (data: any) => {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (!res.ok) throw new Error('Credenciales incorrectas');
+        return res.json();
+      }
+      ```
+    </Info>
+  </Tab>
+  
+  <Tab title="Google Login">
+    ### Quick Access with Google
+    
+    1. Click **"Continuar con Google"** on the login page
+    2. Select your Google account
+    3. Grant necessary permissions
+    4. You'll be automatically redirected to your dashboard
+    
+    <Tip>
+      Google login is the fastest way to access your account without remembering passwords.
+    </Tip>
+  </Tab>
+</Tabs>
+
+## Authentication Architecture
+
+### State Management
+
+RespondeIA uses Zustand with persistence for authentication state:
+
+```typescript
+// From useAuthStore.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+interface AuthState {
+    user: any | null;
+    token: string | null;
+    setAuth: (user: any, token: string) => void;
+    logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>()(persist(
+    (set) => ({
+        user: null,
+        token: null,
+        setAuth: (user, token) => set({user, token}),
+        logout: () => ({user: null, token: null}),
+    }),
+    { name: 'auth-storage' }
+));
+```
+
+### Login Flow
+
+The authentication flow uses React Query for state management:
+
+```typescript
+// From useLogin.ts
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "../store/useAuthStore";
+import { authService } from "../services/auth.service";
+import { useMutation } from "@tanstack/react-query";
+
+export const useLogin = () => {
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: authService.login,
+    onSuccess: (data) => {
+      setAuth(data.user.user, data.user.token);
+      router.push('/dashboard');
+    },
+  });
+};
+```
+
+## Routing Structure
+
+<CardGroup cols={2}>
+  <Card title="Public Routes" icon="globe">
+    - `/` - Home page
+    - `/pricing` - Pricing information
+    - `/recursos` - Resources
+    - `/empresa` - Company info
+  </Card>
+  
+  <Card title="Auth Routes" icon="key">
+    - `/login` - Login page
+    - `/register` - Registration page
+  </Card>
+  
+  <Card title="Dashboard Routes" icon="chart-line">
+    - `/dashboard` - Main dashboard
+    - `/consultas` - Queries/conversations
+    - `/soporte` - Support
+  </Card>
+  
+  <Card title="Protected" icon="shield">
+    All dashboard routes require authentication. Unauthenticated users are redirected to `/login`.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Incorrect Credentials Error">
+    If you see "Credenciales incorrectas":
+    
+    1. Verify your email address is spelled correctly
+    2. Check Caps Lock is off when entering password
+    3. Use the password visibility toggle to verify your password
+    4. Try the "¿Olvidaste tu contraseña?" link to reset your password
+  </Accordion>
+  
+  <Accordion title="Session Not Persisting">
+    If you're being logged out unexpectedly:
+    
+    1. Ensure "Recordar sesión" is checked during login
+    2. Check your browser isn't clearing cookies on exit
+    3. Verify localStorage is enabled in your browser
+    4. Clear browser cache and try logging in again
+  </Accordion>
+  
+  <Accordion title="Registration Not Working">
+    If account creation fails:
+    
+    1. Ensure password is at least 8 characters
+    2. Verify email format is valid (nombre@empresa.com)
+    3. Check you've accepted terms and conditions
+    4. Try using Google sign-up as an alternative
+  </Accordion>
+</AccordionGroup>
+
+## Security Best Practices
+
+<Note>
+  **Password Requirements**
+  - Minimum 8 characters
+  - Use a combination of letters, numbers, and symbols
+  - Avoid using common words or personal information
+  - Don't reuse passwords from other services
+</Note>
+
+<Warning>
+  **Session Security**
+  - Always log out when using shared computers
+  - Don't share your authentication token
+  - Enable two-factor authentication when available
+  - Review active sessions regularly
+</Warning>
+
+## Next Steps
+
+After successful authentication:
+
+1. [Explore your Dashboard](/guides/dashboard) to view analytics and conversations
+2. [Choose a Pricing Plan](/guides/pricing-plans) that fits your business needs  
+3. [Customize your Chatbot](/guides/customization) with your business information
+4. [Connect WhatsApp](/quickstart) to start automating customer service
+
+## API Reference
+
+For developers integrating with the authentication system:
+
+- [Authentication API](/api-reference/authentication/login)
+- [User Management API](/api-reference/authentication/register)
+- [Session Management](/api-reference/authentication/logout)

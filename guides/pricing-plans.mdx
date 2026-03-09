@@ -1,0 +1,477 @@
+---
+title: 'Pricing Plans'
+description: 'Understand RespondeIA pricing plans, billing cycles, and feature comparisons'
+icon: 'dollar-sign'
+---
+
+## Overview
+
+RespondeIA offers flexible pricing plans designed for businesses of all sizes, from startups to agencies. Choose between monthly and annual billing with a 20% discount on annual subscriptions.
+
+<Info>
+  **Free Trial Available**
+  
+  All plans include a 7-day free trial with:
+  - No credit card required
+  - Full access to plan features
+  - Cancel anytime without charges
+</Info>
+
+## Available Plans
+
+RespondeIA offers three pricing tiers optimized for different business needs:
+
+```typescript
+// Plan structure from source/modules/prices/types/plan.ts
+export interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  priceMonth: number;      // Monthly price in USD
+  priceYear: number;       // Annual monthly price in USD
+  features: string[];      // Feature list
+  buttonText: string;      // CTA text
+  highlight: boolean;      // Featured plan indicator
+}
+```
+
+### Plan Comparison
+
+<Tabs>
+  <Tab title="Básico">
+    ### Basic Plan - For Startups
+    
+    Perfect for businesses just starting with WhatsApp automation.
+    
+    ```typescript
+    // From get-plans.ts
+    {
+      id: "basico",
+      name: "Básico",
+      description: "Para negocios que recién comienzan",
+      priceMonth: 29,
+      priceYear: 23,
+      features: [
+        "1 número WhatsApp",
+        "Hasta 500 mensajes",
+        "Respuestas automáticas IA"
+      ],
+      buttonText: "Comenzar prueba",
+      highlight: false,
+    }
+    ```
+    
+    <CardGroup cols={2}>
+      <Card title="Monthly" icon="calendar">
+        **USD $29** /month
+      </Card>
+      <Card title="Annual" icon="calendar-check">
+        **USD $23** /month
+        
+        <Note>Save $72/year with annual billing</Note>
+      </Card>
+    </CardGroup>
+    
+    #### Features Included
+    
+    - **1 WhatsApp Number**: Connect a single business number
+    - **Up to 500 Messages**: Monthly message allowance
+    - **AI Auto-Responses**: Automated customer service
+    - **Basic Analytics**: Essential performance metrics
+    - **7-Day Free Trial**: Test before committing
+    
+    <Tip>
+      Ideal for small businesses with moderate customer inquiry volumes.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Pro">
+    ### Pro Plan - For Growing Businesses
+    
+    The most popular choice for SMBs scaling their operations.
+    
+    ```typescript
+    // From get-plans.ts
+    {
+      id: "pro",
+      name: "Pro",
+      description: "Para pymes en crecimiento",
+      priceMonth: 59,
+      priceYear: 47,
+      features: [
+        "1 número WhatsApp",
+        "Mensajes ilimitados",
+        "IA personalizada avanzada",
+        "CRM de contactos"
+      ],
+      buttonText: "Comenzar prueba",
+      highlight: true,
+    }
+    ```
+    
+    <CardGroup cols={2}>
+      <Card title="Monthly" icon="calendar">
+        **USD $59** /month
+      </Card>
+      <Card title="Annual" icon="calendar-check">
+        **USD $47** /month
+        
+        <Note>Save $144/year with annual billing</Note>
+      </Card>
+    </CardGroup>
+    
+    #### Features Included
+    
+    - **1 WhatsApp Number**: Professional business line
+    - **Unlimited Messages**: No monthly caps or overage fees
+    - **Advanced Custom AI**: Personalized training and responses
+    - **Integrated CRM**: Complete contact management system
+    - **Priority Support**: Faster response times
+    - **Advanced Analytics**: Detailed performance insights
+    - **Automatic Scheduling**: AI-powered appointment booking
+    - **Transfer Controls**: Smart escalation to human agents
+    
+    <Info>
+      **Most Popular Plan** - Recommended for businesses experiencing growth and requiring unlimited automation capacity.
+    </Info>
+  </Tab>
+  
+  <Tab title="Agencia">
+    ### Agency Plan - For Resellers & Multi-Client Management
+    
+    Built for agencies managing multiple client accounts.
+    
+    ```typescript
+    // From get-plans.ts
+    {
+      id: "agencia",
+      name: "Agencia",
+      description: "Para agencias y revendedores",
+      priceMonth: 149,
+      priceYear: 119,
+      features: [
+        "Hasta 5 números",
+        "Mensajes ilimitados",
+        "Panel multi-cliente",
+        "White-label"
+      ],
+      buttonText: "Contactar ventas",
+      highlight: false,
+    }
+    ```
+    
+    <CardGroup cols={2}>
+      <Card title="Monthly" icon="calendar">
+        **USD $149** /month
+      </Card>
+      <Card title="Annual" icon="calendar-check">
+        **USD $119** /month
+        
+        <Note>Save $360/year with annual billing</Note>
+      </Card>
+    </CardGroup>
+    
+    #### Features Included
+    
+    - **Up to 5 WhatsApp Numbers**: Multi-client management
+    - **Unlimited Messages**: Across all connected numbers
+    - **Multi-Client Dashboard**: Centralized management panel
+    - **White-Label Solution**: Brand with your agency identity
+    - **Dedicated Account Manager**: Personalized support
+    - **API Access**: Custom integrations and automation
+    - **Reseller Program**: Revenue sharing opportunities
+    - **Bulk Operations**: Manage multiple clients efficiently
+    
+    <Warning>
+      Agency plan requires sales consultation. Click "Contactar ventas" to discuss custom requirements.
+    </Warning>
+  </Tab>
+</Tabs>
+
+## Billing Cycles
+
+### Monthly vs Annual Billing
+
+<CardGroup cols={2}>
+  <Card title="Monthly Billing" icon="calendar-day">
+    - Pay month-to-month
+    - Cancel anytime
+    - Full-price monthly rates
+    - Automatic renewal on billing date
+    - Ideal for short-term projects
+  </Card>
+  
+  <Card title="Annual Billing" icon="calendar-year">
+    - **20% discount** on all plans
+    - Billed annually (12 months upfront)
+    - Save up to $360/year (Agency plan)
+    - Best value for long-term users
+    - Annual renewal option
+  </Card>
+</CardGroup>
+
+### Billing Toggle Implementation
+
+```tsx
+// From billing-toggle.tsx - Toggle between monthly/annual
+"use client";
+
+interface BillingToggleProps {
+  isAnnual: boolean;
+  onToggle: () => void;
+}
+
+export function BillingToggle({ isAnnual, onToggle }: BillingToggleProps) {
+  return (
+    <div className="flex items-center gap-4 mb-12">
+      <span className={`text-sm ${!isAnnual ? "font-bold" : "text-gray-500"}`}>
+        Mensual
+      </span>
+      <button onClick={onToggle} className="relative w-12 h-6 bg-[#121f3d] rounded-full">
+        <div className={`w-4 h-4 bg-white rounded-full transition-all 
+                       ${isAnnual ? "translate-x-6" : "translate-x-0"}`} />
+      </button>
+      <span className={`text-sm ${isAnnual ? "font-bold" : "text-gray-500"}`}>
+        Anual <span className="text-green-500 ml-1 text-xs font-bold">-20%</span>
+      </span>
+    </div>
+  );
+}
+```
+
+<Tip>
+  Use the billing toggle on `/pricing` to see real-time price calculations for monthly vs annual billing.
+</Tip>
+
+## Pricing Calculation
+
+### How Prices Are Displayed
+
+```typescript
+// Pricing card displays calculated price based on billing cycle
+interface PricingCardProps {
+  plan: Plan;
+  displayPrice: number;  // Calculated based on billing cycle
+}
+
+// From pricing-card.tsx
+<div className="flex items-baseline mb-8">
+  <span className="text-sm font-medium">USD</span>
+  <span className="text-5xl font-black mx-1">{displayPrice}</span>
+  <span className="text-sm text-gray-500">/ mes</span>
+</div>
+```
+
+### Annual Savings Breakdown
+
+| Plan | Monthly Total | Annual Total | Annual Savings |
+|------|--------------|--------------|----------------|
+| **Básico** | $348/year | $276/year | **$72** (20%) |
+| **Pro** | $708/year | $564/year | **$144** (20%) |
+| **Agencia** | $1,788/year | $1,428/year | **$360** (20%) |
+
+<Note>
+  All prices in USD. Annual billing provides consistent 20% discount across all tiers.
+</Note>
+
+## Feature Comparison Matrix
+
+| Feature | Básico | Pro | Agencia |
+|---------|--------|-----|----------|
+| **WhatsApp Numbers** | 1 | 1 | Up to 5 |
+| **Monthly Messages** | 500 | Unlimited | Unlimited |
+| **AI Responses** | ✓ Basic | ✓ Advanced | ✓ Advanced |
+| **CRM Integration** | ✗ | ✓ | ✓ |
+| **Multi-Client Panel** | ✗ | ✗ | ✓ |
+| **White-Label** | ✗ | ✗ | ✓ |
+| **Analytics** | Basic | Advanced | Advanced |
+| **Priority Support** | ✗ | ✓ | ✓ Dedicated |
+| **API Access** | ✗ | ✗ | ✓ |
+| **Free Trial** | 7 days | 7 days | Custom |
+
+## Getting Started with Your Plan
+
+<Steps>
+  <Step title="Select Your Plan">
+    Navigate to `/pricing` and review plan features:
+    
+    ```typescript
+    // Plans fetched from service
+    export async function getPlans(): Promise<Plan[]> {
+      try {
+        return MOCK_PLANS;
+      } catch (error) {
+        console.error("Error al obtener los planes:", error);
+        throw new Error("No se pudieron cargar los planes de precios.");
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Choose Billing Cycle">
+    Toggle between monthly and annual billing to see pricing:
+    - **Monthly**: Full flexibility, cancel anytime
+    - **Annual**: 20% discount, best value
+  </Step>
+  
+  <Step title="Start Free Trial">
+    Click plan button ("Comenzar prueba" or "Contactar ventas"):
+    - No credit card for 7-day trial
+    - Full feature access during trial
+    - Automatic conversion after trial (if card added)
+  </Step>
+  
+  <Step title="Complete Registration">
+    Create your account at `/register` and configure your business
+  </Step>
+</Steps>
+
+## Plan Upgrade & Downgrade
+
+### Upgrading Your Plan
+
+<Info>
+  **Instant Upgrades**
+  
+  Upgrade at any time from your dashboard:
+  1. Navigate to billing settings
+  2. Select new plan tier
+  3. Pay prorated difference
+  4. Features activate immediately
+</Info>
+
+### Downgrading Your Plan
+
+<Warning>
+  **Downgrade Timing**
+  
+  Downgrades take effect at next billing cycle:
+  - Current plan remains active until renewal
+  - No partial refunds for unused time
+  - Features restricted after renewal date
+  - Data retained for 30 days after downgrade
+</Warning>
+
+## Payment Methods
+
+<CardGroup cols={2}>
+  <Card title="Credit/Debit Cards" icon="credit-card">
+    - Visa, Mastercard, American Express
+    - Secure payment processing
+    - Automatic recurring billing
+    - Instant activation
+  </Card>
+  
+  <Card title="MercadoPago" icon="money-bill">
+    - Latin America's trusted payment platform
+    - Multiple payment methods
+    - Local currency support
+    - Flexible payment terms
+    
+    <Note>New integration available</Note>
+  </Card>
+</CardGroup>
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="Can I switch plans during my trial?">
+    Yes! During your 7-day trial, you can test any plan tier. Simply contact support or use the plan switcher in your dashboard.
+  </Accordion>
+  
+  <Accordion title="What happens when I hit the 500 message limit on Básico?">
+    You'll receive notifications at 80% and 95% usage. At 100%, new messages won't be processed until:
+    - Next billing cycle starts
+    - You upgrade to Pro (unlimited messages)
+    - You purchase a message add-on package
+  </Accordion>
+  
+  <Accordion title="Is the annual discount applied automatically?">
+    Yes! When you select annual billing, the 20% discount is automatically calculated:
+    
+    ```typescript
+    // Pricing logic
+    const displayPrice = isAnnual ? plan.priceYear : plan.priceMonth;
+    // priceYear already includes 20% discount
+    ```
+  </Accordion>
+  
+  <Accordion title="Can I add more WhatsApp numbers to Pro plan?">
+    Pro plan includes 1 number. For additional numbers:
+    - Upgrade to Agency plan (up to 5 numbers)
+    - Purchase add-on numbers ($20/month each)
+    - Contact sales for custom enterprise plans (5+ numbers)
+  </Accordion>
+  
+  <Accordion title="What's included in 'white-label' for Agency?">
+    White-label features include:
+    - Custom branding on client dashboards
+    - Your logo and color scheme
+    - Custom domain mapping
+    - Removal of RespondeIA branding
+    - Client-facing documentation with your brand
+  </Accordion>
+  
+  <Accordion title="How does the multi-client panel work?">
+    Agency plan includes centralized management:
+    - Single dashboard for all client accounts
+    - Switch between client views instantly
+    - Bulk operations across multiple accounts
+    - Consolidated reporting and analytics
+    - Individual client billing management
+  </Accordion>
+</AccordionGroup>
+
+## Enterprise Solutions
+
+<Note>
+  **Need More Than 5 Numbers?**
+  
+  Contact our sales team for custom enterprise plans:
+  - Unlimited WhatsApp numbers
+  - Custom feature development
+  - Dedicated infrastructure
+  - SLA guarantees
+  - Volume discounts
+  - Custom integrations
+  
+  Email: sales@respondeia.com
+</Note>
+
+## Billing Support
+
+Need help with billing or subscriptions?
+
+<CardGroup cols={3}>
+  <Card title="API Documentation" icon="book" href="/integration/api-overview">
+    Billing API reference
+  </Card>
+  
+  <Card title="Support" icon="headset">
+    Contact billing support
+  </Card>
+  
+  <Card title="Dashboard" icon="gear">
+    Manage subscription
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<Steps>
+  <Step title="Choose Your Plan">
+    Visit [Pricing Page](/pricing) to select the best fit
+  </Step>
+  
+  <Step title="Start Free Trial">
+    Register at [Sign Up](/register) - no credit card required
+  </Step>
+  
+  <Step title="Configure Your AI">
+    Follow [Customization Guide](/guides/customization) to train your assistant
+  </Step>
+  
+  <Step title="Go Live">
+    Connect WhatsApp using [Quick Start](/quickstart) guide
+  </Step>
+</Steps>

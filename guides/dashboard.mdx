@@ -1,0 +1,409 @@
+---
+title: 'Dashboard Guide'
+description: 'Navigate and use the RespondeIA dashboard to manage your WhatsApp AI automation'
+icon: 'chart-mixed'
+---
+
+## Overview
+
+The RespondeIA dashboard is your central hub for managing WhatsApp conversations, monitoring AI performance, and tracking customer service metrics. This guide will help you navigate and maximize the dashboard's capabilities.
+
+## Accessing the Dashboard
+
+<Steps>
+  <Step title="Login to Your Account">
+    Navigate to `/login` and authenticate using your credentials or Google account.
+  </Step>
+  
+  <Step title="Automatic Redirect">
+    Upon successful login, you'll be automatically redirected to `/dashboard`:
+    
+    ```typescript
+    // From useLogin.ts - Automatic redirect after authentication
+    return useMutation({
+      mutationFn: authService.login,
+      onSuccess: (data) => {
+        setAuth(data.user.user, data.user.token);
+        router.push('/dashboard'); // Auto-redirect
+      },
+    });
+    ```
+  </Step>
+  
+  <Step title="Start Exploring">
+    Access your analytics, conversations, and configuration settings.
+  </Step>
+</Steps>
+
+## Dashboard Sections
+
+<CardGroup cols={2}>
+  <Card title="Main Dashboard" icon="house">
+    Overview of key metrics and system status
+  </Card>
+  
+  <Card title="Consultas (Queries)" icon="messages">
+    View and manage customer conversations
+  </Card>
+  
+  <Card title="Soporte (Support)" icon="headset">
+    Access support resources and help center
+  </Card>
+  
+  <Card title="Analytics" icon="chart-line">
+    Real-time metrics and performance insights
+  </Card>
+</CardGroup>
+
+## Key Features
+
+### Real-Time Analytics
+
+<Info>
+  The dashboard displays live metrics from your WhatsApp AI automation:
+  
+  - **Response Time**: Average of 1.4s (as shown in landing statistics)
+  - **Resolution Rate**: Track automated vs. human-transferred conversations
+  - **Customer Satisfaction**: Monitor satisfaction scores and feedback
+  - **Active Conversations**: See ongoing customer interactions
+</Info>
+
+### Conversation Management
+
+Navigate to `/consultas` to access:
+
+<Tabs>
+  <Tab title="Active Conversations">
+    Monitor ongoing customer interactions in real-time:
+    
+    - View message history with full context
+    - See AI responses and customer queries
+    - Identify conversations requiring human intervention
+    - Track conversation status and resolution
+  </Tab>
+  
+  <Tab title="Conversation History">
+    Access complete historical records:
+    
+    - Search past conversations by date, customer, or keyword
+    - Export conversation data for analysis
+    - Review AI performance on resolved queries
+    - Identify patterns and frequently asked questions
+  </Tab>
+  
+  <Tab title="Transfer Management">
+    Handle AI-to-human transfers:
+    
+    ```typescript
+    // Controlled transfer feature from Features.tsx
+    {
+      title: "Traspaso controlado",
+      description: "Cuando la consulta requiere atención humana, 
+                   el sistema transfiere con contexto.",
+      icon: "🔄",
+    }
+    ```
+    
+    - Review transfer requests from AI
+    - Access full conversation context
+    - Seamlessly continue customer interactions
+    - Mark conversations as resolved
+  </Tab>
+</Tabs>
+
+### CRM Integration
+
+<Note>
+  **Centralized Contact Management**
+  
+  The integrated CRM provides:
+  - Complete customer interaction history
+  - Contact information and preferences
+  - Automated contact creation from WhatsApp conversations
+  - Segmentation and tagging capabilities
+  
+  ```typescript
+  // From Features.tsx - CRM feature
+  {
+    title: "CRM integrado",
+    description: "Registro centralizado de contactos con historial completo.",
+    icon: "👥"
+  }
+  ```
+</Note>
+
+## Dashboard Metrics
+
+### Performance Indicators
+
+<CardGroup cols={2}>
+  <Card title="2,400+ Empresas" icon="building">
+    Join thousands of businesses automating customer service
+  </Card>
+  
+  <Card title="98% Satisfacción" icon="star">
+    Industry-leading customer satisfaction rate
+  </Card>
+  
+  <Card title="8 min Setup" icon="clock">
+    Average time from registration to active AI assistant
+  </Card>
+  
+  <Card title="1.4s Response" icon="bolt">
+    Average AI response time to customer queries
+  </Card>
+</CardGroup>
+
+### Real-Time Monitoring
+
+Track these key metrics on your dashboard:
+
+```typescript
+// Core analytics features from Features.tsx
+{
+  title: "Analytics en tiempo real",
+  description: "Tasa de resolución y satisfacción en un solo panel.",
+  icon: "📊"
+}
+```
+
+<Steps>
+  <Step title="Resolution Rate">
+    Percentage of queries resolved by AI without human intervention
+  </Step>
+  
+  <Step title="Response Time">
+    Average latency from customer message to AI response (target: under 2s)
+  </Step>
+  
+  <Step title="Active Sessions">
+    Number of concurrent conversations being handled by your AI
+  </Step>
+  
+  <Step title="Customer Satisfaction">
+    Average satisfaction scores from post-conversation surveys
+  </Step>
+</Steps>
+
+## Navigation Structure
+
+### Route Configuration
+
+```typescript
+// From routes.ts - Dashboard navigation
+export const ROUTES = {
+  DASHBOARD: {
+    ROOT: "/dashboard",      // Main dashboard overview
+    QUERIES: "/consultas",    // Conversation management
+    SUPPORT: "/soporte",      // Support resources
+  },
+} as const;
+```
+
+<Tip>
+  Use the sidebar navigation to quickly switch between dashboard sections. All routes are protected and require authentication.
+</Tip>
+
+## Setup Progress Tracking
+
+The dashboard guides you through the complete setup process:
+
+<Steps>
+  <Step title="Paso 01: Cargá tu negocio">
+    Enter business information:
+    - Operating hours and services
+    - Pricing and product catalog
+    - Common customer questions and answers
+    
+    ```typescript
+    // From Methodology.tsx
+    {
+      title: "Cargá tu negocio",
+      description: "Horarios, servicios y precios. 
+                   La IA aprende todo desde un formulario guiado."
+    }
+    ```
+  </Step>
+  
+  <Step title="Paso 02: Conectá WhatsApp">
+    Link your WhatsApp Business number:
+    - Verify with authentication code
+    - Compatible with existing numbers
+    - No disruption to current setup
+  </Step>
+  
+  <Step title="Paso 03: La IA responde">
+    Monitor AI automation:
+    - Track automated query handling
+    - Review appointment scheduling
+    - Analyze sales conversions
+  </Step>
+  
+  <Step title="Paso 04: Medís el impacto">
+    View comprehensive metrics:
+    - Conversation statistics
+    - Resolution rates
+    - Customer satisfaction scores
+  </Step>
+</Steps>
+
+## Feature Highlights
+
+### AI Conversational Intelligence
+
+<Info>
+  ```typescript
+  // From Features.tsx
+  {
+    title: "IA conversacional",
+    description: "Respuestas naturales entrenadas con 
+                 la información de tu negocio.",
+    icon: "💬"
+  }
+  ```
+  
+  Train your AI with business-specific information for natural, contextual responses.
+</Info>
+
+### Automatic Scheduling
+
+<Note>
+  The dashboard includes appointment management:
+  
+  ```typescript
+  {
+    title: "Agenda automática",
+    description: "El asistente gestiona turnos y citas 
+                 directamente en la conversación.",
+    icon: "📅"
+  }
+  ```
+  
+  - View all scheduled appointments
+  - Manage calendar integration
+  - Handle rescheduling and cancellations
+  - Send automatic reminders
+</Note>
+
+### Instant Response System
+
+<Tip>
+  **24/7 Availability**
+  
+  Your AI assistant operates continuously:
+  - Less than 2 seconds average latency
+  - No downtime or maintenance windows
+  - Scales automatically during high-traffic periods
+  - Handles multiple conversations simultaneously
+</Tip>
+
+## Support Resources
+
+Access help directly from the dashboard at `/soporte`:
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book">
+    Complete guides and tutorials
+  </Card>
+  
+  <Card title="Video Tutorials" icon="video">
+    Step-by-step visual guides
+  </Card>
+  
+  <Card title="API Reference" icon="code">
+    Developer documentation
+  </Card>
+  
+  <Card title="Live Chat" icon="comment">
+    Direct support from our team
+  </Card>
+</CardGroup>
+
+## Customization Options
+
+From the dashboard, customize your AI assistant:
+
+1. **Business Information**: Update hours, services, and pricing
+2. **AI Personality**: Adjust tone and response style
+3. **Transfer Rules**: Configure when to escalate to humans
+4. **Notifications**: Set up alerts for specific events
+5. **Integrations**: Connect CRM, calendar, and payment systems
+
+<Warning>
+  Changes to AI configuration may take a few minutes to propagate. Test your updates in a staging environment before deploying to production.
+</Warning>
+
+## Best Practices
+
+### Daily Operations
+
+- **Morning Check**: Review overnight conversations and AI performance
+- **Monitor Transfers**: Address human-escalated conversations promptly
+- **Track Metrics**: Watch for unusual patterns or drops in satisfaction
+- **Update Information**: Keep business hours and pricing current
+
+### Weekly Reviews
+
+- **Analyze Trends**: Identify common questions and optimize responses
+- **Review Resolution Rates**: Improve AI training for better automation
+- **Export Data**: Generate reports for stakeholder review
+- **Test Changes**: Validate AI updates with sample conversations
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Dashboard Not Loading">
+    If the dashboard fails to load:
+    
+    1. Verify you're logged in (check for valid session)
+    2. Clear browser cache and cookies
+    3. Check your internet connection
+    4. Try accessing `/dashboard` directly
+    5. Contact support if issues persist
+  </Accordion>
+  
+  <Accordion title="Metrics Not Updating">
+    For delayed or missing metrics:
+    
+    1. Refresh the page to trigger data sync
+    2. Check if WhatsApp connection is active
+    3. Verify your subscription is active
+    4. Allow up to 5 minutes for real-time data processing
+  </Accordion>
+  
+  <Accordion title="Cannot Access Conversations">
+    If `/consultas` is inaccessible:
+    
+    1. Ensure you have appropriate permissions
+    2. Verify your subscription tier includes conversation history
+    3. Check if WhatsApp Business is properly connected
+    4. Try logging out and back in
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<Steps>
+  <Step title="Optimize Your AI">
+    Review [Customization Guide](/guides/customization) to enhance AI responses
+  </Step>
+  
+  <Step title="Upgrade Your Plan">
+    Explore [Pricing Plans](/guides/pricing-plans) for advanced features
+  </Step>
+  
+  <Step title="Connect Integrations">
+    Set up payment processing and calendar sync
+  </Step>
+  
+  <Step title="Invite Team Members">
+    Add colleagues for collaborative customer service
+  </Step>
+</Steps>
+
+## Additional Resources
+
+- [Quick Start Guide](/quickstart) - Initial setup and configuration
+- [API Documentation](/api-reference/introduction) - Developer integration
+- [Customization Guide](/guides/customization) - Personalize your AI
+- [Support Center](/guides/dashboard#support-resources) - Get help when needed

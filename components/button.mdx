@@ -1,0 +1,250 @@
+---
+title: Button
+description: Versatile button component with multiple variants and sizes built on class-variance-authority
+---
+
+A flexible button component that supports multiple visual variants, sizes, and can render as a child component using the `asChild` pattern.
+
+## Installation
+
+The Button component is built with:
+- `class-variance-authority` for variant management
+- `radix-ui` Slot for composition
+- Custom utility functions from `@/lib/utils`
+
+## Basic Usage
+
+<CodeGroup>
+```tsx Default Button
+import { Button } from "@/components/ui/button";
+
+export default function Example() {
+  return <Button>Click me</Button>;
+}
+```
+
+```tsx With Link (asChild)
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+export default function Example() {
+  return (
+    <Button asChild>
+      <Link href="/">Go to Home</Link>
+    </Button>
+  );
+}
+```
+</CodeGroup>
+
+## Variants
+
+The Button component supports 6 visual variants:
+
+<Tabs>
+  <Tab title="Default">
+    ```tsx
+    <Button variant="default">
+      Primary Action
+    </Button>
+    ```
+    Primary variant with background color and high contrast.
+  </Tab>
+  
+  <Tab title="Outline">
+    ```tsx
+    <Button variant="outline">
+      Secondary Action
+    </Button>
+    ```
+    Outlined variant with border and transparent background.
+  </Tab>
+  
+  <Tab title="Secondary">
+    ```tsx
+    <Button variant="secondary">
+      Secondary
+    </Button>
+    ```
+    Secondary background with medium contrast.
+  </Tab>
+  
+  <Tab title="Ghost">
+    ```tsx
+    <Button variant="ghost">
+      Ghost Button
+    </Button>
+    ```
+    Minimal variant with no border or background until hover.
+  </Tab>
+  
+  <Tab title="Destructive">
+    ```tsx
+    <Button variant="destructive">
+      Delete Account
+    </Button>
+    ```
+    Destructive actions with warning colors.
+  </Tab>
+  
+  <Tab title="Link">
+    ```tsx
+    <Button variant="link">
+      Learn more
+    </Button>
+    ```
+    Styled as a text link with underline on hover.
+  </Tab>
+</Tabs>
+
+## Sizes
+
+<CodeGroup>
+```tsx Text Button Sizes
+<Button size="xs">Extra Small</Button>
+<Button size="sm">Small</Button>
+<Button size="default">Default</Button>
+<Button size="lg">Large</Button>
+```
+
+```tsx Icon Button Sizes
+<Button size="icon-xs">
+  <SearchIcon />
+</Button>
+<Button size="icon-sm">
+  <SearchIcon />
+</Button>
+<Button size="icon">
+  <SearchIcon />
+</Button>
+<Button size="icon-lg">
+  <SearchIcon />
+</Button>
+```
+</CodeGroup>
+
+## Real-World Examples
+
+### Hero CTA Buttons
+
+From `modules/landing/components/Hero.tsx:55-67`:
+
+```tsx
+<Button
+  className="h-14 w-full rounded-2xl bg-[#2563eb] px-10 text-[16px] font-bold text-white transition-all hover:bg-[#2563eb]/90 hover:shadow-xl hover:shadow-blue-200 sm:w-auto"
+  asChild
+>
+  <Link href="/register">Comenzar prueba gratuita</Link>
+</Button>
+
+<Button
+  variant="outline"
+  className="h-14 w-full rounded-2xl border-zinc-200 bg-white px-10 text-[16px] font-bold text-zinc-700 transition-all hover:bg-zinc-50 sm:w-auto"
+  asChild
+>
+  <Link href="/demo">Ver demostración</Link>
+</Button>
+```
+
+### Navigation Buttons
+
+From `components/layout/navbar.tsx:48-52`:
+
+```tsx
+<Button variant="ghost" asChild>
+  <Link href="/login">Iniciar sesión</Link>
+</Button>
+
+<Button className="bg-blue-600 text-white rounded-xl px-6" asChild>
+  <Link href="/register">Comenzar gratis</Link>
+</Button>
+```
+
+### Form Submit Button
+
+From `modules/auth/components/LoginForm.tsx:106-112`:
+
+```tsx
+<Button
+  type="submit"
+  className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-lg font-bold"
+  disabled={isPending}
+>
+  {isPending ? "Ingresando..." : "Ingresar"}
+</Button>
+```
+
+### Password Toggle Button
+
+From `modules/auth/components/LoginForm.tsx:77-85`:
+
+```tsx
+<Button
+  type="button"
+  variant="ghost"
+  size="sm"
+  className="absolute right-2 top-1/2 -translate-y-1/2"
+  onClick={() => setShowPassword(!showPassword)}
+>
+  {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+</Button>
+```
+
+## Props
+
+<ParamField path="variant" type="string" default="default">
+  Visual style variant
+  
+  Options: `default` | `outline` | `secondary` | `ghost` | `destructive` | `link`
+</ParamField>
+
+<ParamField path="size" type="string" default="default">
+  Button size preset
+  
+  Options: `xs` | `sm` | `default` | `lg` | `icon-xs` | `icon-sm` | `icon` | `icon-lg`
+</ParamField>
+
+<ParamField path="asChild" type="boolean" default="false">
+  When `true`, the button will render its child component instead of a `<button>` element. Useful for wrapping Link components.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the button
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Disables the button and applies disabled styles (50% opacity, pointer-events disabled)
+</ParamField>
+
+<ParamField path="type" type="string" default="button">
+  HTML button type
+  
+  Options: `button` | `submit` | `reset`
+</ParamField>
+
+## Accessibility
+
+- Includes `focus-visible` styles with ring and border for keyboard navigation
+- Supports `aria-invalid` state with destructive styling
+- Automatically handles `disabled` state with appropriate styling
+- Icon-only buttons should include `aria-label` for screen readers
+
+## Styling Details
+
+- Base height: 32px (h-8) for default size
+- Border radius: `rounded-lg` (8px)
+- Focus ring: 3px ring with 50% opacity
+- Transition: All properties with transition-all
+- SVG icons: Automatically sized to 16px (size-4) unless overridden
+- Group context: Uses `group/button` for nested element styling
+
+## TypeScript
+
+```tsx
+type ButtonProps = React.ComponentProps<"button"> & 
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+  };
+```
+
+The component extends all native HTML button attributes while adding variant control and composition capabilities.

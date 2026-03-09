@@ -1,0 +1,386 @@
+---
+title: 'WhatsApp Integration'
+description: 'Connect your WhatsApp Business account to RespondeIA and start automating customer conversations'
+icon: 'whatsapp'
+---
+
+## Overview
+
+The WhatsApp integration allows RespondeIA to send and receive messages through your WhatsApp Business account, enabling AI-powered customer service automation directly in WhatsApp conversations.
+
+<Note>
+You'll need a WhatsApp Business API account to use this integration. If you don't have one yet, we can help you set it up during onboarding.
+</Note>
+
+## Prerequisites
+
+Before connecting WhatsApp to RespondeIA, ensure you have:
+
+- A WhatsApp Business API account (not the same as WhatsApp Business app)
+- Your WhatsApp Business phone number verified
+- Admin access to your RespondeIA account
+- Your Facebook Business Manager account linked
+
+## Connection Methods
+
+<CardGroup cols={2}>
+  <Card title="Quick Connect" icon="bolt" href="#quick-connect">
+    Recommended for most users. Connect in under 5 minutes using our guided setup.
+  </Card>
+  <Card title="Manual Setup" icon="code" href="#manual-setup">
+    For advanced users who need custom webhook configurations.
+  </Card>
+</CardGroup>
+
+## Quick Connect
+
+<Steps>
+  <Step title="Access Integration Settings">
+    Navigate to your RespondeIA dashboard and go to **Settings** → **Integrations** → **WhatsApp**.
+    
+    Click the **Connect WhatsApp Business** button to begin the OAuth flow.
+  </Step>
+
+  <Step title="Authorize WhatsApp Business">
+    You'll be redirected to Facebook Business Manager. Select the WhatsApp Business account you want to connect.
+    
+    <Warning>
+    Make sure you select the correct phone number. Changing it later requires reconnecting the integration.
+    </Warning>
+    
+    Grant the following permissions:
+    - **Read messages**: To receive customer inquiries
+    - **Send messages**: To send AI-generated responses
+    - **Manage webhooks**: To receive real-time updates
+  </Step>
+
+  <Step title="Configure Webhook">
+    RespondeIA will automatically configure the webhook URL for your WhatsApp Business account:
+    
+    ```text
+    https://api.respondeia.com/webhooks/whatsapp/{your-account-id}
+    ```
+    
+    The webhook handles incoming messages, delivery receipts, and read confirmations.
+  </Step>
+
+  <Step title="Test the Connection">
+    Send a test message to your WhatsApp Business number. You should see:
+    
+    - Message appearing in the RespondeIA dashboard under **Consultas**
+    - AI assistant responding automatically within 1-2 seconds
+    - Message marked as delivered in WhatsApp
+    
+    <Tip>
+    Use the test message: "Hola, quiero información sobre sus servicios" to verify the AI is responding correctly.
+    </Tip>
+  </Step>
+
+  <Step title="Customize AI Behavior">
+    Once connected, configure your AI assistant's behavior:
+    
+    - **Business Information**: Add your products, services, and pricing
+    - **Operating Hours**: Set when the AI should auto-respond vs. escalate
+    - **Tone & Style**: Adjust formality and language preferences
+    - **Response Templates**: Pre-define answers to common questions
+  </Step>
+</Steps>
+
+## Manual Setup
+
+For developers who need more control over the integration:
+
+### 1. Generate API Credentials
+
+Create an API key in your RespondeIA account:
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.respondeia.com/v1/auth/api-keys \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "WhatsApp Integration",
+    "permissions": ["messages:read", "messages:write", "webhooks:manage"]
+  }'
+```
+
+```typescript TypeScript
+const response = await fetch('https://api.respondeia.com/v1/auth/api-keys', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'WhatsApp Integration',
+    permissions: ['messages:read', 'messages:write', 'webhooks:manage']
+  })
+});
+
+const { apiKey } = await response.json();
+```
+</CodeGroup>
+
+### 2. Configure WhatsApp Webhook
+
+Set up your webhook in the Facebook Business Manager:
+
+```json Webhook Configuration
+{
+  "url": "https://api.respondeia.com/webhooks/whatsapp/YOUR_ACCOUNT_ID",
+  "verify_token": "YOUR_WEBHOOK_VERIFY_TOKEN",
+  "fields": [
+    "messages",
+    "message_status",
+    "message_reactions",
+    "message_echoes"
+  ]
+}
+```
+
+### 3. Handle Incoming Messages
+
+RespondeIA automatically processes incoming messages, but you can also handle them programmatically:
+
+```typescript Example: Message Handler
+interface WhatsAppMessage {
+  from: string;
+  text: string;
+  timestamp: number;
+  messageId: string;
+}
+
+// RespondeIA processes messages automatically
+// This example shows the internal flow
+async function handleIncomingMessage(message: WhatsAppMessage) {
+  // 1. Message is received via webhook
+  const response = await fetch('https://api.respondeia.com/v1/messages/process', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      channel: 'whatsapp',
+      from: message.from,
+      content: message.text,
+      messageId: message.messageId
+    })
+  });
+
+  // 2. AI generates response (avg. 1.4s)
+  const { aiResponse, shouldEscalate } = await response.json();
+
+  // 3. Response is sent automatically
+  // You'll receive a webhook notification when sent
+}
+```
+
+### 4. Send Messages Programmatically
+
+Send messages through the RespondeIA API:
+
+<CodeGroup>
+```typescript TypeScript
+async function sendWhatsAppMessage(to: string, message: string) {
+  const response = await fetch('https://api.respondeia.com/v1/messages/send', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      channel: 'whatsapp',
+      to: to,
+      content: message,
+      type: 'text'
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to send message');
+  }
+
+  return response.json();
+}
+```
+
+```python Python
+import requests
+
+def send_whatsapp_message(to: str, message: str) -> dict:
+    response = requests.post(
+        'https://api.respondeia.com/v1/messages/send',
+        headers={
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'channel': 'whatsapp',
+            'to': to,
+            'content': message,
+            'type': 'text'
+        }
+    )
+    
+    response.raise_for_status()
+    return response.json()
+```
+</CodeGroup>
+
+## Features
+
+### Automatic Response
+
+The AI responds to customer messages automatically based on:
+
+- **Business knowledge**: Information you've trained the AI with
+- **Context awareness**: Previous conversation history
+- **Intent detection**: Understanding what the customer needs
+- **Sentiment analysis**: Adjusting tone based on customer emotion
+
+<Info>
+Average response time is **1.4 seconds** from message receipt to AI response sent.
+</Info>
+
+### Smart Escalation
+
+The AI automatically escalates to human agents when:
+
+- Customer explicitly requests human assistance
+- Query is outside the AI's training scope
+- Negative sentiment is detected
+- Transaction requires manual approval
+
+### Rich Media Support
+
+RespondeIA supports all WhatsApp media types:
+
+- Text messages (up to 4096 characters)
+- Images (JPEG, PNG)
+- Documents (PDF, DOCX)
+- Location sharing
+- Contact cards
+- Quick reply buttons
+- List messages
+
+## Monitoring & Analytics
+
+Track your WhatsApp integration performance in the dashboard:
+
+<CardGroup cols={2}>
+  <Card title="Message Volume" icon="chart-line">
+    Total messages sent/received, broken down by hour/day/month
+  </Card>
+  <Card title="Response Time" icon="clock">
+    Average AI response latency and delivery time
+  </Card>
+  <Card title="Resolution Rate" icon="check-circle">
+    Percentage of queries resolved without human intervention
+  </Card>
+  <Card title="Customer Satisfaction" icon="star">
+    CSAT scores collected automatically after conversations
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+### Messages Not Being Received
+
+<Steps>
+  <Step title="Verify Webhook Status">
+    Go to **Settings** → **Integrations** → **WhatsApp** and check webhook status is "Active".
+  </Step>
+  
+  <Step title="Check WhatsApp Business API">
+    Ensure your WhatsApp Business account is active and not rate-limited by Meta.
+  </Step>
+  
+  <Step title="Review Webhook Logs">
+    Check webhook delivery logs in Facebook Business Manager for error codes.
+  </Step>
+</Steps>
+
+### AI Not Responding
+
+- Verify your subscription plan includes AI responses (not available on trial with limitations)
+- Check if operating hours are configured correctly
+- Ensure AI training data has been provided
+
+### Connection Lost
+
+<Warning>
+If you change your WhatsApp Business phone number in Facebook Business Manager, you must reconnect the integration in RespondeIA.
+</Warning>
+
+To reconnect:
+1. Go to **Settings** → **Integrations** → **WhatsApp**
+2. Click **Disconnect**
+3. Follow the Quick Connect steps again
+
+## Rate Limits
+
+WhatsApp Business API has the following limits:
+
+| Tier | Messages per 24h | Notes |
+|------|-----------------|-------|
+| Tier 1 | 1,000 | New accounts |
+| Tier 2 | 10,000 | After quality rating improves |
+| Tier 3 | 100,000 | Established accounts |
+| Unlimited | No limit | By Meta approval |
+
+<Tip>
+RespondeIA automatically manages rate limits and queues messages to prevent API blocks.
+</Tip>
+
+## Security
+
+### Message Encryption
+
+All messages are:
+- Encrypted in transit (TLS 1.3)
+- Encrypted at rest (AES-256)
+- End-to-end encrypted by WhatsApp
+
+### Access Control
+
+Control who can:
+- View conversation history
+- Modify AI training data
+- Access API credentials
+- Export customer data
+
+### Compliance
+
+RespondeIA's WhatsApp integration is compliant with:
+- GDPR (Europe)
+- CCPA (California)
+- LGPD (Brazil)
+- WhatsApp Business Policy
+
+## Best Practices
+
+1. **Train your AI thoroughly**: Provide comprehensive business information before going live
+2. **Set clear operating hours**: Define when AI should handle vs. escalate
+3. **Monitor daily**: Review AI responses in the first week to catch edge cases
+4. **Use templates for common queries**: Pre-define answers to frequent questions
+5. **Enable human handoff**: Always have agents available during business hours
+6. **Respect customer preferences**: Honor opt-out requests immediately
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AI Training" icon="brain" href="/guides/customization">
+    Learn how to train your AI with business-specific information
+  </Card>
+  <Card title="Response Templates" icon="message" href="/guides/customization">
+    Create message templates for common scenarios
+  </Card>
+  <Card title="API Reference" icon="code" href="/integration/api-overview">
+    Explore the full API documentation
+  </Card>
+  <Card title="Analytics" icon="chart-bar" href="/features/analytics">
+    Set up custom analytics and reporting
+  </Card>
+</CardGroup>

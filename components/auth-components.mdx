@@ -1,0 +1,330 @@
+---
+title: "Authentication Components"
+description: "Complete reference for authentication module components - LoginForm, RegisterForm, and AuthHero"
+---
+
+# Authentication Components
+
+The authentication module provides three core components for building login and registration flows with a consistent UI/UX.
+
+## Components Overview
+
+<CardGroup cols={3}>
+  <Card title="LoginForm" icon="right-to-bracket">
+    Complete login form with email/password and OAuth
+  </Card>
+  <Card title="RegisterForm" icon="user-plus">
+    User registration form with validation
+  </Card>
+  <Card title="AuthHero" icon="image">
+    Branded hero section for auth screens
+  </Card>
+</CardGroup>
+
+---
+
+## LoginForm
+
+A fully-featured login form component with email/password authentication, OAuth support, and remember me functionality.
+
+### Usage
+
+```tsx modules/auth/screens/LoginScreen.tsx
+import { LoginForm } from "../components/LoginForm";
+
+export const LoginScreen = () => {
+  return (
+    <section className="flex w-full items-center justify-center bg-white p-8">
+      <LoginForm />
+    </section>
+  );
+};
+```
+
+### Features
+
+- **Email/Password Authentication**: Validated input fields with error handling
+- **OAuth Integration**: Google sign-in button (ready for implementation)
+- **Password Visibility Toggle**: Eye icon to show/hide password
+- **Remember Me Checkbox**: Session persistence option
+- **Loading States**: Disabled state with "Ingresando..." text during submission
+- **Error Display**: API error messages shown below form
+- **Forgot Password Link**: Navigation to password recovery
+
+### Component Structure
+
+The component is self-contained with its own state management:
+
+```tsx
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [showPassword, setShowPassword] = useState(false);
+const { mutate, isPending, error } = useLogin();
+```
+
+### Integration
+
+Uses the `useLogin` hook from `/modules/auth/hooks/useLogin.ts:9` for authentication logic:
+
+```tsx
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  mutate({ email, password });
+};
+```
+
+### Dependencies
+
+- `@/components/ui/button` - shadcn/ui Button component
+- `@/components/ui/input` - shadcn/ui Input component
+- `@/components/ui/label` - shadcn/ui Label component
+- `@/components/ui/checkbox` - shadcn/ui Checkbox component
+- `lucide-react` - EyeIcon, EyeOffIcon
+- `useLogin` - Custom authentication hook
+
+---
+
+## RegisterForm
+
+User registration form with first name, last name, email, password fields and terms acceptance.
+
+### Usage
+
+```tsx modules/auth/screens/RegisterScreen.tsx
+import { RegisterForm } from "../components/RegisterForm";
+
+export const RegisterScreen = () => {
+  return (
+    <section className="flex w-full items-center justify-center bg-white p-8">
+      <RegisterForm />
+    </section>
+  );
+};
+```
+
+### Features
+
+- **Multi-field Form**: First name, last name, email, and password inputs
+- **OAuth Alternative**: Google registration button
+- **Terms & Conditions**: Checkbox with links to terms and privacy policy
+- **Form Validation**: Required fields with HTML5 validation
+- **Responsive Layout**: Two-column grid for name fields on larger screens
+
+### Form Fields
+
+<ParamField path="first-name" type="string" required>
+  User's first name (e.g., "Juan")
+</ParamField>
+
+<ParamField path="last-name" type="string" required>
+  User's last name (e.g., "Pérez")
+</ParamField>
+
+<ParamField path="email" type="email" required>
+  User's email address (e.g., "nombre@empresa.com")
+</ParamField>
+
+<ParamField path="password" type="password" required>
+  Password with minimum 8 characters
+</ParamField>
+
+<ParamField path="terms" type="boolean" required>
+  Accept terms of service and privacy policy
+</ParamField>
+
+### Styling
+
+The form uses consistent styling with the login form:
+
+- Input height: `h-12` (48px)
+- Button styling: `bg-[#2563eb]` with bold text
+- Maximum width: `max-w-[450px]`
+- Spacing: `space-y-8` for sections, `space-y-5` for form fields
+
+---
+
+## AuthHero
+
+Branded hero component displayed on the left side of authentication screens, featuring the RespondeIA logo, customizable title, subtitle, and feature list.
+
+### Props
+
+<ParamField path="title" type="React.ReactNode" required>
+  Main heading - can include JSX for styling (e.g., colored spans, line breaks)
+</ParamField>
+
+<ParamField path="subtitle" type="string" required>
+  Descriptive text shown below the title in muted color
+</ParamField>
+
+<ParamField path="features" type="string[]" required>
+  Array of feature strings displayed as a checklist
+</ParamField>
+
+### Usage Example
+
+```tsx modules/auth/screens/LoginScreen.tsx
+import { AuthHero } from "../components/AuthHero";
+
+export const LoginScreen = () => {
+  return (
+    <section className="hidden lg:flex lg:w-1/2">
+      <AuthHero
+        title={
+          <>
+            Bienvenido <br /> de <span className="text-blue-400">vuelta</span>
+          </>
+        }
+        subtitle="Accedé a tu panel y gestioná tu asistente virtual desde cualquier lugar."
+        features={[
+          "Asistente activo las 24 horas respondiendo por vos",
+          "Métricas en tiempo real de todas tus conversaciones",
+          "Configuración y ajustes en segundos",
+        ]}
+      />
+    </section>
+  );
+};
+```
+
+### Visual Design
+
+- **Background**: Dark navy `bg-[#0b1222]`
+- **Logo**: "Responde" + blue "IA" in top left
+- **Title**: Large (4xl-6xl) white text with optional colored spans
+- **Subtitle**: White with 55% opacity
+- **Features**: Checklist with CheckCircle2 icons and white/55 text
+
+### Typography Scale
+
+- Logo: `text-xl font-bold`
+- Title: `text-4xl md:text-5xl lg:text-6xl font-bold`
+- Subtitle: `text-lg text-white/55`
+- Features: `text-base md:text-lg font-medium`
+
+### Layout
+
+```tsx
+<div className="flex h-full w-full flex-col justify-center bg-[#0b1222] p-8 md:p-16 text-white min-h-[400px]">
+  <div className="max-w-md space-y-10">
+    {/* Logo */}
+    {/* Title & Subtitle */}
+    {/* Features List */}
+  </div>
+</div>
+```
+
+---
+
+## Complete Integration Example
+
+<CodeGroup>
+
+```tsx LoginScreen.tsx
+import { AuthHero } from "../components/AuthHero";
+import { LoginForm } from "../components/LoginForm";
+
+export const LoginScreen = () => {
+  return (
+    <div className="flex min-h-screen w-full flex-col lg:flex-row">
+      {/* Left Side: Hero */}
+      <section className="hidden lg:flex lg:w-1/2">
+        <AuthHero
+          title={
+            <>
+              Bienvenido <br /> de <span className="text-blue-400">vuelta</span>
+            </>
+          }
+          subtitle="Accedé a tu panel y gestioná tu asistente virtual desde cualquier lugar."
+          features={[
+            "Asistente activo las 24 horas respondiendo por vos",
+            "Métricas en tiempo real de todas tus conversaciones",
+            "Configuración y ajustes en segundos",
+          ]}
+        />
+      </section>
+
+      {/* Right Side: Form */}
+      <section className="flex w-full items-center justify-center bg-white p-8 lg:w-1/2">
+        <LoginForm />
+      </section>
+    </div>
+  );
+};
+```
+
+```tsx RegisterScreen.tsx
+import { AuthHero } from "../components/AuthHero";
+import { RegisterForm } from "../components/RegisterForm";
+
+export const RegisterScreen = () => {
+  return (
+    <div className="flex min-h-screen w-full flex-col lg:flex-row">
+      {/* Left Side: Hero */}
+      <section className="hidden lg:flex lg:w-1/2">
+        <AuthHero
+          title={
+            <>
+              Comenzá a <span className="text-blue-400">automatizar</span> <br /> tu atención
+            </>
+          }
+          subtitle="Creá tu cuenta y tené tu asistente de IA funcionando en menos de 10 minutos."
+          features={[
+            "Sin necesidad de tarjeta de crédito",
+            "Integración guiada paso a paso",
+            "Soporte en tiempo real vía chat",
+          ]}
+        />
+      </section>
+
+      {/* Right Side: Form */}
+      <section className="flex w-full items-center justify-center bg-white p-8 lg:w-1/2">
+        <RegisterForm />
+      </section>
+    </div>
+  );
+};
+```
+
+</CodeGroup>
+
+---
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Responsive Layout">
+    Always wrap auth components in a two-column layout: hero (left) and form (right). Hide the hero on mobile with `hidden lg:flex`.
+  </Accordion>
+
+  <Accordion title="Error Handling">
+    The LoginForm displays errors automatically via the `useLogin` hook. Ensure your API returns meaningful error messages.
+  </Accordion>
+
+  <Accordion title="OAuth Integration">
+    Both forms include Google OAuth buttons. Implement the OAuth flow by adding onClick handlers to the Google buttons.
+  </Accordion>
+
+  <Accordion title="Custom Styling">
+    All components use Tailwind CSS. Override styles by passing additional className props to wrapped UI components.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="useLogin Hook" icon="code">
+    Authentication hook used by LoginForm
+  </Card>
+  <Card title="Auth Store" icon="database">
+    Zustand store for auth state management
+  </Card>
+  <Card title="shadcn/ui Components" icon="palette">
+    UI component library reference
+  </Card>
+  <Card title="Auth Service" icon="server" href="/api/auth/login">
+    API service for authentication endpoints
+  </Card>
+</CardGroup>
