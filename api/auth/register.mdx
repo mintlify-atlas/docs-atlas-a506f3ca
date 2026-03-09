@@ -1,201 +1,126 @@
 ---
-title: 'Register'
-description: 'Create a new user account in RespondeIA'
-api: 'POST /api/register'
+title: 'authService.register'
+description: 'Frontend registration service for creating new user accounts'
 ---
 
-Creates a new user account in the RespondeIA platform. After successful registration, the user can authenticate using the `/api/login` endpoint.
-
-## Request Body
-
-<ParamField body="firstName" type="string" required>
-  The user's first name.
-  
-  Example: `Juan`
-</ParamField>
-
-<ParamField body="lastName" type="string" required>
-  The user's last name.
-  
-  Example: `Pérez`
-</ParamField>
-
-<ParamField body="email" type="string" required>
-  The user's email address. Must be a valid email format and unique in the system.
-  
-  Example: `usuario@empresa.com`
-</ParamField>
-
-<ParamField body="password" type="string" required>
-  The user's password. Must meet security requirements (minimum 8 characters recommended).
-  
-  Example: `mySecurePassword123`
-</ParamField>
-
-## Response
-
-<ResponseField name="user" type="object">
-  Contains the newly created user's information.
-  
-  <Expandable title="user">
-    <ResponseField name="id" type="string">
-      Unique identifier for the newly created user.
-    </ResponseField>
-    
-    <ResponseField name="email" type="string">
-      The user's email address.
-    </ResponseField>
-    
-    <ResponseField name="firstName" type="string">
-      The user's first name.
-    </ResponseField>
-    
-    <ResponseField name="lastName" type="string">
-      The user's last name.
-    </ResponseField>
-    
-    <ResponseField name="createdAt" type="string">
-      ISO 8601 timestamp of when the account was created.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-## Error Responses
-
-<ResponseField name="error" type="string">
-  Error message when registration fails.
-</ResponseField>
-
-<ResponseField name="message" type="string">
-  Detailed error message describing why registration failed.
-</ResponseField>
-
-Common error scenarios:
-- Email already registered
-- Invalid email format
-- Password does not meet security requirements
-- Missing required fields
-
-<RequestExample>
-
-```bash cURL
-curl --request POST \
-  --url https://api.respondeia.com/api/register \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "firstName": "Juan",
-    "lastName": "Pérez",
-    "email": "usuario@empresa.com",
-    "password": "mySecurePassword123"
-  }'
-```
-
-```javascript JavaScript
-const response = await fetch('/api/register', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    firstName: 'Juan',
-    lastName: 'Pérez',
-    email: 'usuario@empresa.com',
-    password: 'mySecurePassword123'
-  })
-});
-
-const data = await response.json();
-
-if (response.ok) {
-  console.log('Account created successfully:', data.user);
-  // Redirect to login or automatically authenticate
-} else {
-  console.error('Registration failed:', data.error);
-}
-```
-
-```python Python
-import requests
-
-url = "https://api.respondeia.com/api/register"
-payload = {
-    "firstName": "Juan",
-    "lastName": "Pérez",
-    "email": "usuario@empresa.com",
-    "password": "mySecurePassword123"
-}
-headers = {
-    "Content-Type": "application/json"
-}
-
-response = requests.post(url, json=payload, headers=headers)
-
-if response.status_code == 200:
-    data = response.json()
-    user = data['user']
-    print(f"Account created for: {user['email']}")
-else:
-    error = response.json()
-    print(f"Registration failed: {error.get('error', 'Unknown error')}")
-```
-
-</RequestExample>
-
-<ResponseExample>
-
-```json Success Response
-{
-  "user": {
-    "id": "usr_1234567890",
-    "email": "usuario@empresa.com",
-    "firstName": "Juan",
-    "lastName": "Pérez",
-    "createdAt": "2026-03-09T12:00:00.000Z"
-  }
-}
-```
-
-```json Error Response - Email Already Exists
-{
-  "error": "Email already registered",
-  "message": "An account with this email address already exists. Please login or use a different email."
-}
-```
-
-```json Error Response - Invalid Email
-{
-  "error": "Invalid email format",
-  "message": "Please provide a valid email address."
-}
-```
-
-```json Error Response - Weak Password
-{
-  "error": "Password requirements not met",
-  "message": "Password must be at least 8 characters long."
-}
-```
-
-</ResponseExample>
-
-## Usage Notes
+The `authService.register` method is the frontend service layer that handles user registration. This method calls the backend `/api/register` endpoint to create new user accounts.
 
 <Note>
-  After successful registration, users must authenticate using the `/api/login` endpoint to obtain an authentication token.
+  This documentation covers the **frontend service layer** from the RespondeIA frontend repository. The backend API endpoints are hosted separately.
 </Note>
 
-<Tip>
-  Consider implementing email verification after registration to ensure valid email addresses and enhance security.
-</Tip>
+## Source Code
 
-## Next Steps
+From `modules/auth/services/auth.service.ts`:
 
-After registering a new account:
+```typescript
+export const authService = {
+  // ...
+  register: async (data: any) => {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  }
+};
+```
 
-1. **Authenticate**: Use the [Login endpoint](/api/auth/login) to obtain an authentication token
-2. **Configure Profile**: Update user preferences and settings
-3. **Create WhatsApp Bot**: Start creating your first AI-powered WhatsApp assistant
+## Parameters
 
-<Card title="Login Endpoint" icon="right-to-bracket" href="/api/auth/login">
-  Authenticate with your new account to get started
-</Card>
+<ParamField path="data" type="object" required>
+  Registration data object containing user information.
+  
+  <Expandable title="data properties">
+    <ParamField path="firstName" type="string" required>
+      The user's first name.
+    </ParamField>
+    
+    <ParamField path="lastName" type="string" required>
+      The user's last name.
+    </ParamField>
+    
+    <ParamField path="email" type="string" required>
+      The user's email address.
+    </ParamField>
+    
+    <ParamField path="password" type="string" required>
+      The user's password.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+Returns a Promise that resolves to the parsed JSON response from the backend API.
+
+## Usage Example
+
+From `modules/auth/components/RegisterForm.tsx`:
+
+```typescript
+const RegisterForm = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const result = await authService.register(formData);
+      console.log('Registration successful', result);
+      // Redirect to login or dashboard
+    } catch (error) {
+      console.error('Registration failed', error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Input 
+        value={formData.firstName}
+        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+        placeholder="Juan"
+      />
+      <Input 
+        value={formData.lastName}
+        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+        placeholder="Pérez"
+      />
+      <Input 
+        type="email"
+        value={formData.email}
+        onChange={(e) => setFormData({...formData, email: e.target.value})}
+        placeholder="nombre@empresa.com"
+      />
+      <Input 
+        type="password"
+        value={formData.password}
+        onChange={(e) => setFormData({...formData, password: e.target.value})}
+        placeholder="Mínimo 8 caracteres"
+      />
+      <Button type="submit">Registrarse</Button>
+    </form>
+  );
+};
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="authService.login" icon="right-to-bracket" href="/api/auth/login">
+    Authenticate users after registration
+  </Card>
+  <Card title="RegisterForm Component" icon="window" href="/components/auth-components">
+    UI component using the register service
+  </Card>
+  <Card title="useAuthStore" icon="database">
+    Zustand store for authentication state
+  </Card>
+  <Card title="Authentication Guide" icon="book" href="/guides/authentication">
+    Complete authentication workflow guide
+  </Card>
+</CardGroup>

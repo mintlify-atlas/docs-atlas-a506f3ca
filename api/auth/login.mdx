@@ -1,160 +1,114 @@
 ---
-title: 'Login'
-description: 'Authenticate a user and obtain an access token'
-api: 'POST /api/login'
+title: 'authService.login'
+description: 'Frontend authentication service for user login'
 ---
 
-Authenticates a user with their email and password credentials. Upon successful authentication, returns a user object and authentication token that should be used for subsequent API requests.
-
-## Request Body
-
-<ParamField body="email" type="string" required>
-  The user's email address used for authentication.
-  
-  Example: `usuario@empresa.com`
-</ParamField>
-
-<ParamField body="password" type="string" required>
-  The user's password.
-  
-  Example: `mySecurePassword123`
-</ParamField>
-
-## Response
-
-<ResponseField name="user" type="object">
-  Contains the authenticated user's information and authentication token.
-  
-  <Expandable title="user">
-    <ResponseField name="user" type="object">
-      The user's profile information.
-      
-      <Expandable title="user details">
-        <ResponseField name="id" type="string">
-          Unique identifier for the user.
-        </ResponseField>
-        
-        <ResponseField name="email" type="string">
-          The user's email address.
-        </ResponseField>
-        
-        <ResponseField name="firstName" type="string">
-          The user's first name.
-        </ResponseField>
-        
-        <ResponseField name="lastName" type="string">
-          The user's last name.
-        </ResponseField>
-      </Expandable>
-    </ResponseField>
-    
-    <ResponseField name="token" type="string">
-      JWT authentication token to be used in subsequent API requests. Include this token in the `Authorization` header as `Bearer {token}`.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-## Error Responses
-
-<ResponseField name="error" type="string">
-  Error message when authentication fails.
-  
-  Common error: `Credenciales incorrectas` (Invalid credentials)
-</ResponseField>
-
-<RequestExample>
-
-```bash cURL
-curl --request POST \
-  --url https://api.respondeia.com/api/login \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "email": "usuario@empresa.com",
-    "password": "mySecurePassword123"
-  }'
-```
-
-```javascript JavaScript
-const response = await fetch('/api/login', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    email: 'usuario@empresa.com',
-    password: 'mySecurePassword123'
-  })
-});
-
-const data = await response.json();
-
-if (!response.ok) {
-  throw new Error('Credenciales incorrectas');
-}
-
-// Store the token for future requests
-const { user, token } = data.user;
-```
-
-```python Python
-import requests
-
-url = "https://api.respondeia.com/api/login"
-payload = {
-    "email": "usuario@empresa.com",
-    "password": "mySecurePassword123"
-}
-headers = {
-    "Content-Type": "application/json"
-}
-
-response = requests.post(url, json=payload, headers=headers)
-
-if response.status_code == 200:
-    data = response.json()
-    user = data['user']['user']
-    token = data['user']['token']
-    print(f"Logged in as: {user['email']}")
-else:
-    print("Credenciales incorrectas")
-```
-
-</RequestExample>
-
-<ResponseExample>
-
-```json Success Response
-{
-  "user": {
-    "user": {
-      "id": "usr_1234567890",
-      "email": "usuario@empresa.com",
-      "firstName": "Juan",
-      "lastName": "Pérez"
-    },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-}
-```
-
-```json Error Response
-{
-  "error": "Credenciales incorrectas"
-}
-```
-
-</ResponseExample>
-
-## Usage Notes
+The `authService.login` method is the frontend service layer that handles user authentication. This method calls the backend `/api/login` endpoint and manages the authentication flow.
 
 <Note>
-  After successful login, store the authentication token securely. The token should be included in the `Authorization` header for all subsequent API requests:
-  
-  ```
-  Authorization: Bearer {token}
-  ```
+  This documentation covers the **frontend service layer** from the RespondeIA frontend repository. The backend API endpoints are hosted separately.
 </Note>
 
-<Warning>
-  Never store authentication tokens in plain text or expose them in client-side code repositories. Use secure storage mechanisms appropriate for your platform.
-</Warning>
+## Source Code
+
+From `modules/auth/services/auth.service.ts`:
+
+```typescript
+export const authService = {
+  login: async (data: any) => {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) throw new Error('Credenciales incorrectas');
+    return res.json();
+  },
+  // ...
+};
+```
+
+## Parameters
+
+<ParamField path="data" type="object" required>
+  Login credentials object containing email and password.
+  
+  <Expandable title="data properties">
+    <ParamField path="email" type="string" required>
+      The user's email address.
+    </ParamField>
+    
+    <ParamField path="password" type="string" required>
+      The user's password.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+Returns a Promise that resolves to the parsed JSON response from the backend API.
+
+## Error Handling
+
+Throws an `Error` with message `'Credenciales incorrectas'` when the API response is not ok (`!res.ok`).
+
+## Usage Example
+
+From `modules/auth/hooks/useLogin.ts`:
+
+```typescript
+import { useMutation } from '@tanstack/react-query';
+import { authService } from '../services/auth.service';
+
+export const useLogin = () => {
+  return useMutation({
+    mutationFn: authService.login,
+    onSuccess: (data) => {
+      // Handle successful login
+      console.log('Login successful', data);
+    },
+    onError: (error) => {
+      // Handle login error
+      console.error('Login failed', error);
+    }
+  });
+};
+```
+
+Used in `LoginForm.tsx`:
+
+```typescript
+const LoginForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { mutate, isPending, error } = useLogin();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    mutate({ email, password });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Form fields */}
+    </form>
+  );
+};
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="authService.register" icon="user-plus" href="/api/auth/register">
+    Register new users
+  </Card>
+  <Card title="useLogin Hook" icon="code">
+    React Query hook wrapping the login service
+  </Card>
+  <Card title="LoginForm Component" icon="window" href="/components/auth-components">
+    UI component using the login service
+  </Card>
+  <Card title="useAuthStore" icon="database">
+    Zustand store for authentication state
+  </Card>
+</CardGroup>

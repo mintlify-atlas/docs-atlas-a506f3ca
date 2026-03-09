@@ -1,64 +1,110 @@
 ---
-title: 'Get Pricing Plans'
-api: 'GET /api/pricing/plans'
-description: 'Retrieve all available pricing plans for RespondeIA'
+title: 'getPlans Service'
+description: 'Frontend service for retrieving pricing plans'
 ---
 
-## Overview
+The `getPlans` function is the frontend service layer that provides pricing plan data. This function currently returns mock data but is structured to support future database or API integration.
 
-This endpoint returns a list of all available pricing plans, including their features, pricing information for monthly and annual billing cycles, and display properties.
+<Note>
+  This documentation covers the **frontend service layer** from the RespondeIA frontend repository. The pricing data is currently hardcoded in `modules/prices/services/get-plans.ts`.
+</Note>
 
-## Request
+## Source Code
 
-<ParamField query="cache" type="string" optional>
-  Cache control parameter. Use `no-cache` to bypass cache and fetch fresh data.
-</ParamField>
+From `modules/prices/services/get-plans.ts`:
 
-### Headers
+```typescript
+import { Plan } from "../types/plan";
 
-No authentication required. This is a public endpoint.
+const MOCK_PLANS: Plan[] = [
+  {
+    id: "basico",
+    name: "Básico",
+    description: "Para negocios que recién comienzan",
+    priceMonth: 29,
+    priceYear: 23,
+    features: ["1 número WhatsApp", "Hasta 500 mensajes", "Respuestas automáticas IA"],
+    buttonText: "Comenzar prueba",
+    highlight: false,
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    description: "Para pymes en crecimiento",
+    priceMonth: 59,
+    priceYear: 47,
+    features: ["1 número WhatsApp", "Mensajes ilimitados", "IA personalizada avanzada", "CRM de contactos"],
+    buttonText: "Comenzar prueba",
+    highlight: true,
+  },
+  {
+    id: "agencia",
+    name: "Agencia",
+    description: "Para agencias y revendedores",
+    priceMonth: 149,
+    priceYear: 119,
+    features: ["Hasta 5 números", "Mensajes ilimitados", "Panel multi-cliente", "White-label"],
+    buttonText: "Contactar ventas",
+    highlight: false,
+  },
+];
 
-## Response
+export async function getPlans(): Promise<Plan[]> {
+  try {
+    return MOCK_PLANS;
+  } catch (error) {
+    console.error("Error al obtener los planes:", error);
+    throw new Error("No se pudieron cargar los planes de precios.");
+  }
+}
+```
 
-Returns an array of Plan objects with the following structure:
+## Plan Interface
 
-<ResponseField name="plans" type="Plan[]" required>
-  Array of available pricing plans
-  
-  <Expandable title="Plan object properties">
-    <ResponseField name="id" type="string" required>
-      Unique identifier for the plan. Possible values: `basico`, `pro`, `agencia`
-    </ResponseField>
+From `modules/prices/types/plan.ts`:
 
-    <ResponseField name="name" type="string" required>
-      Display name of the plan (e.g., "Básico", "Pro", "Agencia")
-    </ResponseField>
+```typescript
+export interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  priceMonth: number;
+  priceYear: number; // Base price for annual calculation
+  features: string[];
+  buttonText: string;
+  highlight: boolean; // Whether to highlight in UI
+}
 
-    <ResponseField name="description" type="string" required>
-      Short description of the plan's target audience
-    </ResponseField>
+export type BillingCycle = "monthly" | "annually";
+```
 
-    <ResponseField name="priceMonth" type="number" required>
-      Monthly price in USD
-    </ResponseField>
+## Returns
 
-    <ResponseField name="priceYear" type="number" required>
-      Annual price per month in USD (base price for annual calculation)
-    </ResponseField>
+Returns a `Promise<Plan[]>` - array of all available pricing plans.
 
-    <ResponseField name="features" type="string[]" required>
-      Array of feature descriptions included in the plan
-    </ResponseField>
+## Current Plans
 
-    <ResponseField name="buttonText" type="string" required>
-      Call-to-action text for the plan's button
-    </ResponseField>
+The service returns three plans:
 
-    <ResponseField name="highlight" type="boolean" required>
-      Whether this plan should be highlighted/featured in the UI
-    </ResponseField>
-  </Expandable>
-</ResponseField>
+1. **Básico** ($29/month, $23/month annually)
+   - For businesses just starting out
+   - 1 WhatsApp number
+   - Up to 500 messages
+   - AI automatic responses
+
+2. **Pro** ($59/month, $47/month annually) - **Highlighted**
+   - For growing SMBs
+   - 1 WhatsApp number
+   - Unlimited messages
+   - Advanced custom AI
+   - Contact CRM
+
+3. **Agencia** ($149/month, $119/month annually)
+   - For agencies and resellers
+   - Up to 5 numbers
+   - Unlimited messages
+   - Multi-client panel
+   - White-label
 
 <ResponseExample>
 ```json Response Example
@@ -111,113 +157,77 @@ Returns an array of Plan objects with the following structure:
 ```
 </ResponseExample>
 
-## Code Examples
+## Usage Example
 
-<CodeGroup>
-```javascript JavaScript/TypeScript
-// Using fetch
-const response = await fetch('https://api.respondeia.com/api/pricing/plans');
-const plans = await response.json();
+### In Server Components (Next.js App Router)
 
-console.log(plans);
+From `app/(public)/pricing/page.tsx`:
 
-// Using the hook (Next.js server component)
-import { useGetPricingPlans } from '@/modules/prices/hooks/useGetPricingPlans';
+```typescript
+import { useGetPricingPlans } from "@/modules/prices/hooks/useGetPricingPlans";
+import { PricingScreen } from "@/modules/prices/screens/pricing-screen";
 
-const { plans } = await useGetPricingPlans();
-```
-
-```python Python
-import requests
-
-response = requests.get('https://api.respondeia.com/api/pricing/plans')
-plans = response.json()
-
-print(plans)
-```
-
-```bash cURL
-curl -X GET https://api.respondeia.com/api/pricing/plans \
-  -H "Content-Type: application/json"
-```
-
-```php PHP
-<?php
-$ch = curl_init('https://api.respondeia.com/api/pricing/plans');
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$response = curl_exec($ch);
-$plans = json_decode($response, true);
-curl_close($ch);
-
-print_r($plans);
-?>
-```
-</CodeGroup>
-
-## Integration Example
-
-Here's how the pricing plans are typically used in a React/Next.js application:
-
-```tsx Example Usage
-import { useGetPricingPlans } from '@/modules/prices/hooks/useGetPricingPlans';
-import { PricingScreen } from '@/modules/prices/screens/pricing-screen';
-
-// ISR Configuration: Revalidate every 24 hours
+// ISR configuration: Revalidate every 24 hours
 export const revalidate = 86400;
 
 export default async function PricingPage() {
-  // Fetch plans from the API
   const { plans } = await useGetPricingPlans();
-
-  // Pass plans to the pricing screen component
   return <PricingScreen initialPlans={plans} />;
 }
 ```
 
-## Billing Cycle Types
+### In Client Components
 
-The platform supports two billing cycle types:
+From `modules/prices/screens/pricing-screen.tsx`:
 
-<ParamField body="billingCycle" type="string">
-  - `monthly` - Monthly billing cycle (uses `priceMonth` value)
-  - `annually` - Annual billing cycle (uses `priceYear` value, typically discounted)
-</ParamField>
+```typescript
+"use client";
 
-## Caching
+import { Plan } from "../types/plan";
+import { usePricingPlans } from "../hooks/usePrincingPlans";
 
-This endpoint uses Incremental Static Regeneration (ISR) with a 24-hour revalidation period (`revalidate = 86400` seconds) to ensure optimal performance while keeping pricing data relatively fresh.
+interface PricingScreenProps {
+  initialPlans: Plan[];
+}
 
-## Error Handling
+export function PricingScreen({ initialPlans }: PricingScreenProps) {
+  const { plans, isAnnual, toggleBilling } = usePricingPlans(initialPlans);
 
-<ResponseField name="error" type="object">
-  <Expandable title="Error object">
-    <ResponseField name="message" type="string">
-      Error message describing what went wrong
-    </ResponseField>
-    
-    <ResponseField name="code" type="string">
-      Error code for programmatic handling
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseExample>
-```json Error Response
-{
-  "error": {
-    "message": "No se pudieron cargar los planes de precios.",
-    "code": "PLANS_FETCH_ERROR"
-  }
+  return (
+    <main className="min-h-screen bg-gray-50 py-20 px-4">
+      <PricingGrid plans={plans} />
+    </main>
+  );
 }
 ```
-</ResponseExample>
 
 ## Notes
 
 <Note>
-  Currently, the pricing plans are served from a static configuration. In future versions, these may be dynamically loaded from a database or external pricing service.
+  The pricing plans are currently hardcoded in `get-plans.ts`. The function is structured to easily support future database or API integration.
 </Note>
 
+<Info>
+  The pricing page uses ISR (Incremental Static Regeneration) with a 24-hour revalidation period to ensure optimal performance.
+</Info>
+
 <Tip>
-  The `highlight` field is used to mark the recommended or most popular plan in your UI. Typically, only one plan should have `highlight: true`.
+  The `highlight` field marks the recommended plan (currently "Pro"). Only one plan should have `highlight: true`.
 </Tip>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Plan Type Interface" icon="file-code">
+    TypeScript interface for Plan objects
+  </Card>
+  <Card title="usePricingPlans Hook" icon="code">
+    Client-side hook for managing pricing state
+  </Card>
+  <Card title="Pricing Components" icon="window" href="/components/pricing-components">
+    UI components for displaying plans
+  </Card>
+  <Card title="Pricing Guide" icon="book" href="/guides/pricing-plans">
+    Complete pricing documentation
+  </Card>
+</CardGroup>
